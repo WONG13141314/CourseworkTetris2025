@@ -9,6 +9,10 @@
 <Pane fx:controller="com.comp2042.GuiController"
       xmlns:fx="http://javafx.com/fxml">
     <GridPane fx:id="brickPanel" vgap="1" hgap="1"/>
+    <VBox layoutX="260" layoutY="100" spacing="5" styleClass="nextBrick">
+        <Label text="NEXT BRICK:" styleClass="nextBrickLabel"/>
+        <GridPane fx:id="nextBrickPanel" vgap="1" hgap="1"/>
+    </VBox>
     <BorderPane styleClass="gameBoard" fx:id="gameBoard">
         <center>
             <GridPane fx:id="gamePanel" hgap="1" vgap="1" layoutY="30" layoutX="40"/>
@@ -20,6 +24,7 @@
             <GameOverPanel fx:id="gameOverPanel"/>
         </VBox>
     </Group>
+    <Label fx:id="scoreLabel" text="Score: 0" styleClass="scoreClass" layoutX="40" layoutY="500" />
     <stylesheets>
         <URL value="@window_style.css"/>
     </stylesheets>
