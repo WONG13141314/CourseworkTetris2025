@@ -82,6 +82,23 @@ public class SimpleBoard implements Board {
     }
 
     @Override
+    public int calculateShadowPosition() {
+        int[][] currentMatrix = MatrixOperations.copy(currentGameMatrix);
+        int shadowY = (int) currentOffset.getY();
+
+        while (true) {
+            shadowY++;
+            boolean conflict = MatrixOperations.intersect(currentMatrix, brickRotator.getCurrentShape(),
+                    (int) currentOffset.getX(), shadowY);
+            if (conflict) {
+                shadowY--;
+                break;
+            }
+        }
+        return shadowY;
+    }
+
+    @Override
     public boolean createNewBrick() {
         Brick currentBrick = brickGenerator.getBrick();
         brickRotator.setBrick(currentBrick);
@@ -96,7 +113,11 @@ public class SimpleBoard implements Board {
 
     @Override
     public ViewData getViewData() {
-        return new ViewData(brickRotator.getCurrentShape(), (int) currentOffset.getX(), (int) currentOffset.getY(), brickGenerator.getNextBrick().getShapeMatrix().get(0));
+        int shadowY = calculateShadowPosition();
+        return new ViewData(brickRotator.getCurrentShape(),
+                (int) currentOffset.getX(), (int) currentOffset.getY(),
+                brickGenerator.getNextBrick().getShapeMatrix().get(0),
+                shadowY);
     }
 
     @Override
