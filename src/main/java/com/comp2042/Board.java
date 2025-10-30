@@ -14,6 +14,8 @@ public interface Board {
 
     int[][] getBoardMatrix();
 
+    int calculateShadowPosition();
+
     ViewData getViewData();
 
     void mergeBrickToBackground();
