@@ -70,3 +70,10 @@
     -fx-fill: yellow;
     -fx-text-fill: yellow;
 }
+
+.highScoreClass {
+    -fx-font-family: "Let's go Digital";
+    -fx-font-size: 24px;
+    -fx-text-fill: yellow;
+    -fx-effect: dropshadow(gaussian, black, 2, 0.5, 1, 1);
+}

@@ -25,6 +25,7 @@
         </VBox>
     </Group>
     <Label fx:id="scoreLabel" text="Score: 0" styleClass="scoreClass" layoutX="40" layoutY="500" />
+    <Label fx:id="highScoreLabel" styleClass="highScoreClass" layoutX="40" layoutY="530" />
     <stylesheets>
         <URL value="@window_style.css"/>
     </stylesheets>

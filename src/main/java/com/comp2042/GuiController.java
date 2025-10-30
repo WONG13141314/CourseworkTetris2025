@@ -47,6 +47,9 @@ public class GuiController implements Initializable {
     @FXML
     private Label scoreLabel;
 
+    @FXML
+    private Label highScoreLabel;
+
     private GridPane shadowPanel;
 
     private Rectangle[][] shadowRectangles;
@@ -296,6 +299,12 @@ public class GuiController implements Initializable {
     public void bindScore(IntegerProperty integerProperty) {
         if (scoreLabel != null) {
             scoreLabel.textProperty().bind(integerProperty.asString("Score: %d"));
+        }
+    }
+
+    public void bindHighScore(IntegerProperty integerProperty) {
+        if (highScoreLabel != null) {
+            highScoreLabel.textProperty().bind(integerProperty.asString("High Score: %d"));
         }
     }
 
