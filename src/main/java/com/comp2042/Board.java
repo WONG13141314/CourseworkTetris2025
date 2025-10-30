@@ -25,4 +25,10 @@ public interface Board {
     Score getScore();
 
     void newGame();
+
+    boolean holdBrick();
+
+    int[][] getHoldBrickData();
+
+    boolean canHold();
 }
