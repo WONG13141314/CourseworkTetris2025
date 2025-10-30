@@ -28,6 +28,14 @@ import java.util.ResourceBundle;
 public class GuiController implements Initializable {
 
     private static final int BRICK_SIZE = 20;
+    private double getGamePanelOffsetX() {
+        double screenShift = 100;
+        return gamePanel.getLayoutX() + screenShift;
+    }
+
+    private double getGamePanelOffsetY() {
+        return gamePanel.getLayoutY();
+    }
 
     @FXML
     private GridPane gamePanel;
@@ -39,9 +47,6 @@ public class GuiController implements Initializable {
     private GridPane brickPanel;
 
     @FXML
-    private GridPane nextBrickPanel;
-
-    @FXML
     private GameOverPanel gameOverPanel;
 
     @FXML
@@ -51,12 +56,15 @@ public class GuiController implements Initializable {
     private Label scoreLabel;
 
     @FXML
-    private Label highScoreLabel;
+    private GridPane nextBrickPanel;
 
     @FXML
     private GridPane holdBrickPanel;
 
     private Rectangle[][] holdBrickRectangles;
+
+    @FXML
+    private Label highScoreLabel;
 
     private GridPane shadowPanel;
 
@@ -172,12 +180,22 @@ public class GuiController implements Initializable {
         }
         updateShadowPosition(brick);
 
-        brickPanel.setLayoutX(gamePanel.getLayoutX() + brick.getxPosition() * brickPanel.getVgap() + brick.getxPosition() * BRICK_SIZE);
-        brickPanel.setLayoutY(-42 + gamePanel.getLayoutY() + brick.getyPosition() * brickPanel.getHgap() + brick.getyPosition() * BRICK_SIZE);
+        brickPanel.setLayoutX(getGamePanelOffsetX() + brick.getxPosition() * (brickPanel.getVgap() + BRICK_SIZE));
+        brickPanel.setLayoutY(getGamePanelOffsetY() + brick.getyPosition() * (brickPanel.getHgap() + BRICK_SIZE) - 46);
 
         int[][] nextBrickData = brick.getNextBrickData();
         nextBrickRectangles = new Rectangle[nextBrickData.length][nextBrickData[0].length];
-
+        if (nextBrickPanel != null) {
+            nextBrickPanel.getChildren().clear();
+            for (int i = 0; i < nextBrickData.length; i++) {
+                for (int j = 0; j < nextBrickData[i].length; j++) {
+                    Rectangle rectangle = new Rectangle(BRICK_SIZE, BRICK_SIZE);
+                    rectangle.setFill(getFillColor(nextBrickData[i][j]));
+                    nextBrickRectangles[i][j] = rectangle;
+                    nextBrickPanel.add(rectangle, j, i);
+                }
+            }
+        }
         centerNextBrick(nextBrickData);
 
         timeLine = new Timeline(new KeyFrame(
@@ -268,8 +286,8 @@ public class GuiController implements Initializable {
 
     private void updateShadowPosition(ViewData brick) {
         if (shadowPanel != null && brick != null && shadowRectangles != null) {
-            shadowPanel.setLayoutX(gamePanel.getLayoutX() + brick.getxPosition() * shadowPanel.getVgap() + brick.getxPosition() * BRICK_SIZE);
-            shadowPanel.setLayoutY(-46 + gamePanel.getLayoutY() + brick.getShadowYPosition() * shadowPanel.getHgap() + brick.getShadowYPosition() * BRICK_SIZE);
+            shadowPanel.setLayoutX(gamePanel.getLayoutX() + brick.getxPosition() * (shadowPanel.getVgap() + BRICK_SIZE));
+            shadowPanel.setLayoutY(gamePanel.getLayoutY() + brick.getShadowYPosition() * (shadowPanel.getHgap() + BRICK_SIZE) - 46);
 
             int[][] currentBrickData = brick.getBrickData();
             for (int i = 0; i < shadowRectangles.length; i++) {
@@ -328,8 +346,9 @@ public class GuiController implements Initializable {
     private void refreshBrick(ViewData brick) {
         if (isPause.getValue() == Boolean.FALSE) {
             updateShadowPosition(brick);
-            brickPanel.setLayoutX(gamePanel.getLayoutX() + brick.getxPosition() * brickPanel.getVgap() + brick.getxPosition() * BRICK_SIZE);
-            brickPanel.setLayoutY(-42 + gamePanel.getLayoutY() + brick.getyPosition() * brickPanel.getHgap() + brick.getyPosition() * BRICK_SIZE);
+            brickPanel.setLayoutX(getGamePanelOffsetX() + brick.getxPosition() * (brickPanel.getVgap() + BRICK_SIZE));
+            brickPanel.setLayoutY(getGamePanelOffsetY() + brick.getyPosition() * (brickPanel.getHgap() + BRICK_SIZE) - 46);
+
             for (int i = 0; i < brick.getBrickData().length; i++) {
                 for (int j = 0; j < brick.getBrickData()[i].length; j++) {
                     setRectangleData(brick.getBrickData()[i][j], rectangles[i][j]);
@@ -384,6 +403,7 @@ public class GuiController implements Initializable {
         gamePanel.requestFocus();
     }
 
+
     public void setEventListener(InputEventListener eventListener) {
         this.eventListener = eventListener;
     }
@@ -404,6 +424,7 @@ public class GuiController implements Initializable {
         timeLine.stop();
         gameOverPanel.setVisible(true);
         isGameOver.setValue(Boolean.TRUE);
+        brickPanel.setVisible(false);
         if (shadowPanel != null) {
             shadowPanel.setVisible(false);
         }

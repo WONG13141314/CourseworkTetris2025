@@ -156,7 +156,7 @@ public class SimpleBoard implements Board {
             brickGenerator.getBrick();
             Brick nextBrick = brickGenerator.getBrick();
             brickRotator.setBrick(nextBrick);
-            currentOffset = new Point(4, 0);
+            currentOffset = new Point(3, 0);
             hasHoldBrick = true;
         } else {
             Brick temp = holdBrick;
