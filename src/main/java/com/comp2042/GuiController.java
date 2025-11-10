@@ -66,6 +66,11 @@ public class GuiController implements Initializable {
     @FXML
     private Label highScoreLabel;
 
+    @FXML
+    private Label timerLabel;
+
+    private GameTimer gameTimer;
+
     private GridPane shadowPanel;
 
     private Rectangle[][] shadowRectangles;
@@ -87,6 +92,8 @@ public class GuiController implements Initializable {
         Font.loadFont(getClass().getClassLoader().getResource("digital.ttf").toExternalForm(), 38);
         gamePanel.setFocusTraversable(true);
         gamePanel.requestFocus();
+        gameTimer = new GameTimer();
+        setupTimerLabel();
         gamePanel.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent keyEvent) {
@@ -135,6 +142,22 @@ public class GuiController implements Initializable {
         reflection.setFraction(0.8);
         reflection.setTopOpacity(0.9);
         reflection.setTopOffset(-12);
+    }
+
+    private void setupTimerLabel() {
+        if (timerLabel != null) {
+            gameTimer.elapsedSecondsProperty().addListener((observable, oldValue, newValue) -> {
+                timerLabel.setText(formatTime(newValue.intValue()));
+            });
+            timerLabel.getStyleClass().add("timerClass");
+            timerLabel.setText(formatTime(0));
+        }
+    }
+
+    private String formatTime(int totalSeconds) {
+        int minutes = totalSeconds / 60;
+        int seconds = totalSeconds % 60;
+        return String.format("%02d:%02d", minutes, seconds);
     }
 
     public void initGameView(int[][] boardMatrix, ViewData brick) {
@@ -204,6 +227,7 @@ public class GuiController implements Initializable {
         ));
         timeLine.setCycleCount(Timeline.INDEFINITE);
         timeLine.play();
+        gameTimer.start();
     }
 
     private Paint getFillColor(int i) {
@@ -422,6 +446,7 @@ public class GuiController implements Initializable {
 
     public void gameOver() {
         timeLine.stop();
+        gameTimer.stop();
         gameOverPanel.setVisible(true);
         isGameOver.setValue(Boolean.TRUE);
         brickPanel.setVisible(false);
@@ -432,6 +457,7 @@ public class GuiController implements Initializable {
 
     public void newGame(ActionEvent actionEvent) {
         timeLine.stop();
+        gameTimer.reset();
         gameOverPanel.setVisible(false);
         brickPanel.setVisible(true);
         if (shadowPanel != null) {
@@ -440,11 +466,25 @@ public class GuiController implements Initializable {
         eventListener.createNewGame();
         gamePanel.requestFocus();
         timeLine.play();
+        gameTimer.start();
         isPause.setValue(Boolean.FALSE);
         isGameOver.setValue(Boolean.FALSE);
     }
 
     public void pauseGame(ActionEvent actionEvent) {
+        if (isPause.getValue() == Boolean.FALSE) {
+            timeLine.stop();
+            gameTimer.stop();
+            isPause.setValue(Boolean.TRUE);
+        } else {
+            timeLine.play();
+            gameTimer.start();
+            isPause.setValue(Boolean.FALSE);
+        }
         gamePanel.requestFocus();
+    }
+
+    public GameTimer getGameTimer() {
+        return gameTimer;
     }
 }

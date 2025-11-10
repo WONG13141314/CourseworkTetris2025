@@ -9,6 +9,7 @@
 <Pane fx:controller="com.comp2042.GuiController"
       xmlns:fx="http://javafx.com/fxml">
     <GridPane fx:id="brickPanel" vgap="1" hgap="1"/>
+    <Label fx:id="timerLabel" text="00:00" styleClass="timerClass" layoutX="10" layoutY="20" />
     <VBox layoutX="350" layoutY="20" spacing="8" styleClass="nextBrick" prefWidth="130" prefHeight="120">
         <Label text="NEXT BRICK" styleClass="nextBrickLabel" VBox.vgrow="ALWAYS" StackPane.alignment="CENTER"/>
         <VBox styleClass="nextBrickPanel" alignment="CENTER" VBox.vgrow="ALWAYS">

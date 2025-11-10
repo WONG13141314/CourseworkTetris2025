@@ -96,3 +96,15 @@
     -fx-text-fill: yellow;
     -fx-effect: dropshadow(gaussian, black, 2, 0.5, 1, 1);
 }
+
+.timerClass {
+     -fx-font-family: "Let's go Digital";
+     -fx-font-size: 24px;
+     -fx-text-fill: #00ffff;
+     -fx-font-weight: bold;
+     -fx-effect: dropshadow(gaussian, rgba(0, 255, 255, 0.6), 3, 0.7, 0, 1);
+     -fx-background-color: transparent;
+     -fx-padding: 0;
+     -fx-border-color: transparent;
+     -fx-border-width: 0;
+}
