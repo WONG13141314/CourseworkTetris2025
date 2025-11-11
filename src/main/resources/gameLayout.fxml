@@ -7,34 +7,107 @@
 <?import javafx.scene.text.Text?>
 <?import java.net.URL?>
 <Pane fx:controller="com.comp2042.GuiController"
-      xmlns:fx="http://javafx.com/fxml">
-    <GridPane fx:id="brickPanel" vgap="1" hgap="1"/>
-    <Label fx:id="timerLabel" text="00:00" styleClass="timerClass" layoutX="10" layoutY="20" />
-    <VBox layoutX="350" layoutY="20" spacing="8" styleClass="nextBrick" prefWidth="130" prefHeight="120">
-        <Label text="NEXT BRICK" styleClass="nextBrickLabel" VBox.vgrow="ALWAYS" StackPane.alignment="CENTER"/>
-        <VBox styleClass="nextBrickPanel" alignment="CENTER" VBox.vgrow="ALWAYS">
-            <GridPane fx:id="nextBrickPanel" vgap="1" hgap="1" alignment="CENTER"/>
-        </VBox>
-    </VBox>
-    <VBox layoutX="350" layoutY="180" spacing="8" styleClass="nextBrick" prefWidth="130" prefHeight="120">
-        <Label text="HOLD BRICK" styleClass="nextBrickLabel" VBox.vgrow="ALWAYS" StackPane.alignment="CENTER"/>
-        <VBox styleClass="nextBrickPanel" alignment="CENTER" VBox.vgrow="ALWAYS">
-            <GridPane fx:id="holdBrickPanel" vgap="1" hgap="1" alignment="CENTER"/>
-        </VBox>
-    </VBox>
-    <BorderPane styleClass="gameBoard" fx:id="gameBoard" layoutX="100">
-        <center>
-            <GridPane fx:id="gamePanel" hgap="1" vgap="1" layoutY="30" layoutX="40"/>
-        </center>
-    </BorderPane>
+      xmlns:fx="http://javafx.com/fxml" styleClass="tetrio-root" prefWidth="520" prefHeight="560">
 
-    <Group fx:id="groupNotification" layoutX="114" layoutY="203">
+    <!-- Main Game Container -->
+    <VBox alignment="TOP_CENTER" spacing="0" styleClass="main-container">
+
+        <!-- Header Area -->
+        <HBox styleClass="header-area" alignment="CENTER_LEFT" spacing="20">
+            <!-- Game Logo/Title -->
+            <Label text="TETRIO" styleClass="game-title"/>
+
+            <!-- Stats Container -->
+            <HBox styleClass="stats-container" spacing="15" alignment="CENTER_LEFT">
+                <VBox alignment="CENTER" spacing="2">
+                    <Label text="SCORE" styleClass="stat-label"/>
+                    <Label fx:id="scoreLabel" text="0" styleClass="stat-value"/>
+                </VBox>
+                <VBox alignment="CENTER" spacing="2">
+                    <Label text="BEST" styleClass="stat-label"/>
+                    <Label fx:id="highScoreLabel" text="0" styleClass="stat-value"/>
+                </VBox>
+                <VBox alignment="CENTER" spacing="2">
+                    <Label text="TIME" styleClass="stat-label"/>
+                    <Label fx:id="timerLabel" text="00:00" styleClass="stat-value"/>
+                </VBox>
+            </HBox>
+        </HBox>
+
+        <!-- Main Game Area -->
+        <HBox styleClass="game-area" alignment="CENTER" spacing="30">
+
+            <!-- Hold Panel -->
+            <VBox styleClass="side-panel" spacing="5" alignment="TOP_CENTER" prefWidth="100" prefHeight="120">
+                <Label text="HOLD" styleClass="panel-title"/>
+                <VBox styleClass="brick-display-container" alignment="CENTER" VBox.vgrow="ALWAYS">
+                    <GridPane fx:id="holdBrickPanel" vgap="1" hgap="1" alignment="CENTER"/>
+                </VBox>
+            </VBox>
+
+            <!-- Game Board Container -->
+            <VBox styleClass="game-board-container" alignment="CENTER">
+                <!-- Game Board with fixed position -->
+                <BorderPane styleClass="game-board" fx:id="gameBoard" layoutX="160" layoutY="120" prefWidth="200" prefHeight="400">
+                    <center>
+                        <GridPane fx:id="gamePanel" hgap="1" vgap="1" styleClass="game-grid"/>
+                    </center>
+                </BorderPane>
+            </VBox>
+
+            <!-- Next Panel -->
+            <VBox styleClass="side-panel" spacing="5" alignment="TOP_CENTER" prefWidth="100" prefHeight="120">
+                <Label text="NEXT" styleClass="panel-title"/>
+                <VBox styleClass="brick-display-container" alignment="CENTER" VBox.vgrow="ALWAYS">
+                    <GridPane fx:id="nextBrickPanel" vgap="1" hgap="1" alignment="CENTER"/>
+                </VBox>
+            </VBox>
+        </HBox>
+
+        <!-- Footer Area -->
+        <VBox styleClass="footer-area" alignment="CENTER" spacing="8">
+            <Label text="CONTROLS" styleClass="controls-title"/>
+            <HBox styleClass="controls-container" spacing="15" alignment="CENTER">
+                <VBox alignment="CENTER" spacing="2">
+                    <Label text="← →" styleClass="control-key"/>
+                    <Label text="MOVE" styleClass="control-description"/>
+                </VBox>
+                <VBox alignment="CENTER" spacing="2">
+                    <Label text="↑" styleClass="control-key"/>
+                    <Label text="ROTATE" styleClass="control-description"/>
+                </VBox>
+                <VBox alignment="CENTER" spacing="2">
+                    <Label text="↓" styleClass="control-key"/>
+                    <Label text="SOFT DROP" styleClass="control-description"/>
+                </VBox>
+                <VBox alignment="CENTER" spacing="2">
+                    <Label text="SPACE" styleClass="control-key"/>
+                    <Label text="HARD DROP" styleClass="control-description"/>
+                </VBox>
+                <VBox alignment="CENTER" spacing="2">
+                    <Label text="C/SHIFT" styleClass="control-key"/>
+                    <Label text="HOLD" styleClass="control-description"/>
+                </VBox>
+                <VBox alignment="CENTER" spacing="2">
+                    <Label text="N" styleClass="control-key"/>
+                    <Label text="NEW GAME" styleClass="control-description"/>
+                </VBox>
+            </HBox>
+        </VBox>
+    </VBox>
+
+    <!-- Active Brick Panel - Positioned absolutely -->
+    <GridPane fx:id="brickPanel" vgap="1" hgap="1" styleClass="active-brick-panel" layoutX="160" layoutY="120"/>
+
+    <!-- Shadow Panel - Will be positioned by code -->
+
+    <!-- Game Over Panel & Notifications -->
+    <Group fx:id="groupNotification" layoutX="160" layoutY="280">
         <VBox alignment="CENTER">
             <GameOverPanel fx:id="gameOverPanel"/>
         </VBox>
     </Group>
-    <Label fx:id="scoreLabel" text="Score: 0" styleClass="scoreClass" layoutX="140" layoutY="500" />
-    <Label fx:id="highScoreLabel" styleClass="highScoreClass" layoutX="140" layoutY="530" />
+
     <stylesheets>
         <URL value="@window_style.css"/>
     </stylesheets>

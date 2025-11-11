@@ -28,14 +28,26 @@ import java.util.ResourceBundle;
 public class GuiController implements Initializable {
 
     private static final int BRICK_SIZE = 20;
-    private double getGamePanelOffsetX() {
-        double screenShift = 100;
-        return gamePanel.getLayoutX() + screenShift;
+    private double getAbsoluteX(javafx.scene.Node node) {
+        double x = 0;
+        while (node != null) {
+            x += node.getLayoutX();
+            if (node.getParent() == null) break;
+            node = node.getParent();
+        }
+        return x;
     }
 
-    private double getGamePanelOffsetY() {
-        return gamePanel.getLayoutY();
+    private double getAbsoluteY(javafx.scene.Node node) {
+        double y = 0;
+        while (node != null) {
+            y += node.getLayoutY();
+            if (node.getParent() == null) break;
+            node = node.getParent();
+        }
+        return y;
     }
+
 
     @FXML
     private GridPane gamePanel;
@@ -107,32 +119,48 @@ public class GuiController implements Initializable {
                     }
                     return;
                 }
+
                 if (isPause.getValue() == Boolean.FALSE && isGameOver.getValue() == Boolean.FALSE) {
+                    boolean moved = false;
+
                     if (keyEvent.getCode() == KeyCode.LEFT || keyEvent.getCode() == KeyCode.A) {
-                        refreshBrick(eventListener.onLeftEvent(new MoveEvent(EventType.LEFT, EventSource.USER)));
+                        ViewData viewData = eventListener.onLeftEvent(new MoveEvent(EventType.LEFT, EventSource.USER));
+                        refreshBrick(viewData);
+                        moved = true;
                         keyEvent.consume();
                     }
-                    if (keyEvent.getCode() == KeyCode.RIGHT || keyEvent.getCode() == KeyCode.D) {
-                        refreshBrick(eventListener.onRightEvent(new MoveEvent(EventType.RIGHT, EventSource.USER)));
+                    else if (keyEvent.getCode() == KeyCode.RIGHT || keyEvent.getCode() == KeyCode.D) {
+                        ViewData viewData = eventListener.onRightEvent(new MoveEvent(EventType.RIGHT, EventSource.USER));
+                        refreshBrick(viewData);
+                        moved = true;
                         keyEvent.consume();
                     }
-                    if (keyEvent.getCode() == KeyCode.UP || keyEvent.getCode() == KeyCode.W) {
-                        refreshBrick(eventListener.onRotateEvent(new MoveEvent(EventType.ROTATE, EventSource.USER)));
+                    else if (keyEvent.getCode() == KeyCode.UP || keyEvent.getCode() == KeyCode.W) {
+                        ViewData viewData = eventListener.onRotateEvent(new MoveEvent(EventType.ROTATE, EventSource.USER));
+                        refreshBrick(viewData);
+                        moved = true;
                         keyEvent.consume();
                     }
-                    if (keyEvent.getCode() == KeyCode.DOWN || keyEvent.getCode() == KeyCode.S) {
+                    else if (keyEvent.getCode() == KeyCode.DOWN || keyEvent.getCode() == KeyCode.S) {
                         moveDown(new MoveEvent(EventType.DOWN, EventSource.USER));
+                        moved = true;
                         keyEvent.consume();
+                    }
+                    else if (keyEvent.getCode() == KeyCode.C || keyEvent.getCode() == KeyCode.SHIFT) {
+                        ViewData viewData = eventListener.onHoldEvent(new MoveEvent(EventType.HOLD, EventSource.USER));
+                        refreshBrick(viewData);
+                        moved = true;
+                        keyEvent.consume();
+                    }
+
+                    if (moved) {
+                        gamePanel.requestFocus();
                     }
                 }
+
                 if (keyEvent.getCode() == KeyCode.N) {
                     newGame(null);
-                }
-                if (keyEvent.getCode() == KeyCode.C || keyEvent.getCode() == KeyCode.SHIFT) {
-                    if (isPause.getValue() == Boolean.FALSE && isGameOver.getValue() == Boolean.FALSE) {
-                        refreshBrick(eventListener.onHoldEvent(new MoveEvent(EventType.HOLD, EventSource.USER)));
-                        keyEvent.consume();
-                    }
+                    keyEvent.consume();
                 }
             }
         });
@@ -203,8 +231,12 @@ public class GuiController implements Initializable {
         }
         updateShadowPosition(brick);
 
-        brickPanel.setLayoutX(getGamePanelOffsetX() + brick.getxPosition() * (brickPanel.getVgap() + BRICK_SIZE));
-        brickPanel.setLayoutY(getGamePanelOffsetY() + brick.getyPosition() * (brickPanel.getHgap() + BRICK_SIZE) - 46);
+        double gamePanelAbsX = getAbsoluteX(gamePanel);
+        double gamePanelAbsY = getAbsoluteY(gamePanel);
+        double brickX = gamePanelAbsX + brick.getxPosition() * (BRICK_SIZE + 1);
+        double brickY = gamePanelAbsY + (brick.getyPosition() - 2) * (BRICK_SIZE + 1);
+        brickPanel.setLayoutX(brickX);
+        brickPanel.setLayoutY(brickY);
 
         int[][] nextBrickData = brick.getNextBrickData();
         nextBrickRectangles = new Rectangle[nextBrickData.length][nextBrickData[0].length];
@@ -370,8 +402,12 @@ public class GuiController implements Initializable {
     private void refreshBrick(ViewData brick) {
         if (isPause.getValue() == Boolean.FALSE) {
             updateShadowPosition(brick);
-            brickPanel.setLayoutX(getGamePanelOffsetX() + brick.getxPosition() * (brickPanel.getVgap() + BRICK_SIZE));
-            brickPanel.setLayoutY(getGamePanelOffsetY() + brick.getyPosition() * (brickPanel.getHgap() + BRICK_SIZE) - 46);
+            double gamePanelAbsX = getAbsoluteX(gamePanel);
+            double gamePanelAbsY = getAbsoluteY(gamePanel);
+            double brickX = gamePanelAbsX + brick.getxPosition() * (BRICK_SIZE + 1);
+            double brickY = gamePanelAbsY + (brick.getyPosition() - 2) * (BRICK_SIZE + 1);
+            brickPanel.setLayoutX(brickX);
+            brickPanel.setLayoutY(brickY);
 
             for (int i = 0; i < brick.getBrickData().length; i++) {
                 for (int j = 0; j < brick.getBrickData()[i].length; j++) {
