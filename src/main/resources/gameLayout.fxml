@@ -35,12 +35,12 @@
         </HBox>
 
         <!-- Main Game Area -->
-        <HBox styleClass="game-area" alignment="CENTER" spacing="30">
+        <HBox styleClass="game-area" alignment="TOP_CENTER" spacing="30">
 
             <!-- Hold Panel -->
-            <VBox styleClass="side-panel" spacing="5" alignment="TOP_CENTER" prefWidth="100" prefHeight="120">
+            <VBox styleClass="side-panel" spacing="5" alignment="TOP_CENTER" prefWidth="100" prefHeight="140">
                 <Label text="HOLD" styleClass="panel-title"/>
-                <VBox styleClass="brick-display-container" alignment="CENTER" VBox.vgrow="ALWAYS">
+                <VBox styleClass="brick-display-container" alignment="CENTER">
                     <GridPane fx:id="holdBrickPanel" vgap="1" hgap="1" alignment="CENTER"/>
                 </VBox>
             </VBox>
@@ -56,9 +56,9 @@
             </VBox>
 
             <!-- Next Panel -->
-            <VBox styleClass="side-panel" spacing="5" alignment="TOP_CENTER" prefWidth="100" prefHeight="120">
+            <VBox styleClass="side-panel" spacing="5" alignment="TOP_CENTER" prefWidth="100" prefHeight="140">
                 <Label text="NEXT" styleClass="panel-title"/>
-                <VBox styleClass="brick-display-container" alignment="CENTER" VBox.vgrow="ALWAYS">
+                <VBox styleClass="brick-display-container" alignment="CENTER">
                     <GridPane fx:id="nextBrickPanel" vgap="1" hgap="1" alignment="CENTER"/>
                 </VBox>
             </VBox>
@@ -98,8 +98,6 @@
 
     <!-- Active Brick Panel - Positioned absolutely -->
     <GridPane fx:id="brickPanel" vgap="1" hgap="1" styleClass="active-brick-panel" layoutX="160" layoutY="120"/>
-
-    <!-- Shadow Panel - Will be positioned by code -->
 
     <!-- Game Over Panel & Notifications -->
     <Group fx:id="groupNotification" layoutX="160" layoutY="280">

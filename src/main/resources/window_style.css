@@ -52,7 +52,7 @@
 
 /* Side Panels */
 .side-panel {
-    -fx-padding: 12px;
+    -fx-padding: 10px;
     -fx-background-color: rgba(36, 40, 59, 0.8);
     -fx-background-radius: 8px;
     -fx-border-color: #2a2d3a;
@@ -60,7 +60,8 @@
     -fx-border-radius: 8px;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 8, 0.2, 0, 2);
     -fx-pref-width: 100px;
-    -fx-pref-height: 120px;
+    -fx-pref-height: 140px;
+    -fx-max-height: 140px;
 }
 
 .panel-title {
