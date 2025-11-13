@@ -7,7 +7,7 @@
 <?import javafx.scene.text.Text?>
 <?import java.net.URL?>
 <Pane fx:controller="com.comp2042.GuiController"
-      xmlns:fx="http://javafx.com/fxml" styleClass="tetrio-root" prefWidth="520" prefHeight="560">
+      xmlns:fx="http://javafx.com/fxml" styleClass="tetrisjfx-root" prefWidth="520" prefHeight="560">
 
     <!-- Main Game Container -->
     <VBox alignment="TOP_CENTER" spacing="0" styleClass="main-container">
@@ -15,7 +15,7 @@
         <!-- Header Area -->
         <HBox styleClass="header-area" alignment="CENTER_LEFT" spacing="20">
             <!-- Game Logo/Title -->
-            <Label text="TETRIO" styleClass="game-title"/>
+            <Label text="TetrisJFX" styleClass="game-title"/>
 
             <!-- Stats Container -->
             <HBox styleClass="stats-container" spacing="15" alignment="CENTER_LEFT">

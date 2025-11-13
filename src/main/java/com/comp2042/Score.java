@@ -35,7 +35,7 @@ public final class Score {
 
     private void loadHighScore() {
         try {
-            int savedHighScore = prefs.getInt("tetris_high_score", 0);
+            int savedHighScore = prefs.getInt("tetrisjfx_high_score", 0);
             highScore.setValue(savedHighScore);
         } catch (Exception e) {
             highScore.setValue(0);
