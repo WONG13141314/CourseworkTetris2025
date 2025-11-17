@@ -241,6 +241,7 @@ public class SimpleBoard implements Board {
         holdBrick = null;
         hasHoldBrick = false;
         canHold = true;
+        brickGenerator.reset();
         createNewBrick();
     }
 
