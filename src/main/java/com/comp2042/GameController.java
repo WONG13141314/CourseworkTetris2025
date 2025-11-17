@@ -2,14 +2,18 @@ package com.comp2042;
 
 public class GameController implements InputEventListener {
 
-    private Board board = new SimpleBoard(25, 10);
-
+    private Board board;
     private final GuiController viewGuiController;
+    private final GameMode gameMode;
 
-    public GameController(GuiController c) {
-        viewGuiController = c;
+    public GameController(GuiController c, GameMode gameMode) {
+        this.gameMode = gameMode;
+        this.viewGuiController = c;
+        this.board = new SimpleBoard(25, 10, gameMode);
+
         board.createNewBrick();
         viewGuiController.setEventListener(this);
+        viewGuiController.setGameMode(gameMode);
         viewGuiController.initGameView(board.getBoardMatrix(), board.getViewData());
         viewGuiController.bindScore(board.getScore().scoreProperty());
         viewGuiController.bindHighScore(board.getScore().highScoreProperty());
@@ -57,7 +61,6 @@ public class GameController implements InputEventListener {
         return board.getViewData();
     }
 
-
     @Override
     public void createNewGame() {
         board.newGame();
@@ -99,5 +102,9 @@ public class GameController implements InputEventListener {
             viewGuiController.refreshGameBackground(board.getBoardMatrix());
         }
         return board.getViewData();
+    }
+
+    public GameMode getGameMode() {
+        return gameMode;
     }
 }

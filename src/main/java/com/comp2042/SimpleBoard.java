@@ -15,17 +15,19 @@ public class SimpleBoard implements Board {
     private int[][] currentGameMatrix;
     private Point currentOffset;
     private final Score score;
+    private final GameMode gameMode;
     private Brick holdBrick;
     private boolean canHold = true;
     private boolean hasHoldBrick = false;
 
-    public SimpleBoard(int width, int height) {
+    public SimpleBoard(int width, int height, GameMode gameMode) {
         this.width = width;
         this.height = height;
+        this.gameMode = gameMode;
         currentGameMatrix = new int[width][height];
         brickGenerator = new RandomBrickGenerator();
         brickRotator = new BrickRotator();
-        score = new Score();
+        score = new Score(gameMode);
     }
 
     @Override
@@ -41,7 +43,6 @@ public class SimpleBoard implements Board {
             return true;
         }
     }
-
 
     @Override
     public boolean moveBrickLeft() {
@@ -125,7 +126,21 @@ public class SimpleBoard implements Board {
         brickRotator.setBrick(currentBrick);
         currentOffset = new Point(3, 0);
         canHold = true;
-        return MatrixOperations.intersect(currentGameMatrix, brickRotator.getCurrentShape(), (int) currentOffset.getX(), (int) currentOffset.getY());
+
+        boolean gameOver = MatrixOperations.intersect(currentGameMatrix, brickRotator.getCurrentShape(),
+                (int) currentOffset.getX(), (int) currentOffset.getY());
+
+        if (gameOver && gameMode == GameMode.ZEN) {
+            clearEntireBoard();
+            gameOver = MatrixOperations.intersect(currentGameMatrix, brickRotator.getCurrentShape(),
+                    (int) currentOffset.getX(), (int) currentOffset.getY());
+        }
+
+        return gameOver;
+    }
+
+    private void clearEntireBoard() {
+        currentGameMatrix = new int[width][height];
     }
 
     @Override
@@ -153,7 +168,6 @@ public class SimpleBoard implements Board {
         ClearRow clearRow = MatrixOperations.checkRemoving(currentGameMatrix);
         currentGameMatrix = clearRow.getNewMatrix();
         return clearRow;
-
     }
 
     @Override
@@ -220,7 +234,6 @@ public class SimpleBoard implements Board {
         return canHold;
     }
 
-
     @Override
     public void newGame() {
         currentGameMatrix = new int[width][height];
@@ -229,5 +242,9 @@ public class SimpleBoard implements Board {
         hasHoldBrick = false;
         canHold = true;
         createNewBrick();
+    }
+
+    public GameMode getGameMode() {
+        return gameMode;
     }
 }

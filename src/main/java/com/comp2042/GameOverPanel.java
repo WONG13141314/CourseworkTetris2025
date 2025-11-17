@@ -13,7 +13,7 @@ public class GameOverPanel extends BorderPane {
         final Label gameOverLabel = new Label("GAME OVER");
         gameOverLabel.getStyleClass().add("gameOverStyle");
 
-        final Label restartLabel = new Label("Press 'N' for New Game");
+        final Label restartLabel = new Label("Press 'N' to Restart  |  Press 'ESC' for Main Menu");
         restartLabel.setStyle("-fx-text-fill: #a9b1d6; -fx-font-size: 12px; -fx-font-family: 'Segoe UI';");
 
         VBox container = new VBox(8);

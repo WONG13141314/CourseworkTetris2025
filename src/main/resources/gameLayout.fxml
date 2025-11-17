@@ -7,15 +7,18 @@
 <?import javafx.scene.text.Text?>
 <?import java.net.URL?>
 <Pane fx:controller="com.comp2042.GuiController"
-      xmlns:fx="http://javafx.com/fxml" styleClass="tetrisjfx-root" prefWidth="520" prefHeight="560">
+      xmlns:fx="http://javafx.com/fxml" styleClass="tetrisjfx-root" prefWidth="540" prefHeight="720">
 
     <!-- Main Game Container -->
     <VBox alignment="TOP_CENTER" spacing="0" styleClass="main-container">
 
         <!-- Header Area -->
         <HBox styleClass="header-area" alignment="CENTER_LEFT" spacing="20">
-            <!-- Game Logo/Title -->
-            <Label text="TetrisJFX" styleClass="game-title"/>
+            <!-- Game Logo -->
+            <VBox spacing="2">
+                <Label text="TetrisJFX" styleClass="game-title"/>
+                <Label fx:id="gameModeLabel" text="ZEN MODE" styleClass="game-mode-label"/>
+            </VBox>
 
             <!-- Stats Container -->
             <HBox styleClass="stats-container" spacing="15" alignment="CENTER_LEFT">
@@ -47,7 +50,7 @@
 
             <!-- Game Board Container -->
             <VBox styleClass="game-board-container" alignment="CENTER">
-                <!-- Game Board with fixed position -->
+                <!-- Game Board -->
                 <BorderPane styleClass="game-board" fx:id="gameBoard" layoutX="160" layoutY="120" prefWidth="200" prefHeight="400">
                     <center>
                         <GridPane fx:id="gamePanel" hgap="1" vgap="1" styleClass="game-grid"/>
@@ -90,17 +93,21 @@
                 </VBox>
                 <VBox alignment="CENTER" spacing="2">
                     <Label text="N" styleClass="control-key"/>
-                    <Label text="NEW GAME" styleClass="control-description"/>
+                    <Label text="RESTART" styleClass="control-description"/>
+                </VBox>
+                <VBox alignment="CENTER" spacing="2">
+                    <Label text="ESC" styleClass="control-key"/>
+                    <Label text="MAIN MENU" styleClass="control-description"/>
                 </VBox>
             </HBox>
         </VBox>
     </VBox>
 
-    <!-- Active Brick Panel - Positioned absolutely -->
-    <GridPane fx:id="brickPanel" vgap="1" hgap="1" styleClass="active-brick-panel" layoutX="160" layoutY="120"/>
+    <!-- Active Brick Panel -->
+    <GridPane fx:id="brickPanel" vgap="1" hgap="1" styleClass="active-brick-panel" layoutX="170" layoutY="160"/>
 
     <!-- Game Over Panel & Notifications -->
-    <Group fx:id="groupNotification" layoutX="160" layoutY="280">
+    <Group fx:id="groupNotification" layoutX="120" layoutY="280">
         <VBox alignment="CENTER">
             <GameOverPanel fx:id="gameOverPanel"/>
         </VBox>

@@ -8,8 +8,11 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.effect.Reflection;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -18,6 +21,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
@@ -28,6 +32,12 @@ import java.util.ResourceBundle;
 public class GuiController implements Initializable {
 
     private static final int BRICK_SIZE = 20;
+    private static final int BLITZ_TIME_SECONDS = 120; // 2 minutes
+
+    private GameMode gameMode;
+    private int blitzTimeRemaining = BLITZ_TIME_SECONDS;
+    private Timeline blitzTimer;
+
     private double getAbsoluteX(javafx.scene.Node node) {
         double x = 0;
         while (node != null) {
@@ -47,7 +57,6 @@ public class GuiController implements Initializable {
         }
         return y;
     }
-
 
     @FXML
     private GridPane gamePanel;
@@ -80,6 +89,9 @@ public class GuiController implements Initializable {
 
     @FXML
     private Label timerLabel;
+
+    @FXML
+    private Label gameModeLabel;
 
     private GameTimer gameTimer;
 
@@ -157,7 +169,10 @@ public class GuiController implements Initializable {
                         gamePanel.requestFocus();
                     }
                 }
-
+                if (keyEvent.getCode() == KeyCode.ESCAPE) {
+                    returnToMenu();
+                    keyEvent.consume();
+                }
                 if (keyEvent.getCode() == KeyCode.N) {
                     newGame(null);
                     keyEvent.consume();
@@ -172,14 +187,48 @@ public class GuiController implements Initializable {
         reflection.setTopOffset(-12);
     }
 
+    public void setGameMode(GameMode mode) {
+        this.gameMode = mode;
+        if (gameModeLabel != null) {
+            gameModeLabel.setText(mode == GameMode.ZEN ? "ZEN MODE" : "BLITZ MODE");
+            if (mode == GameMode.BLITZ) {
+                gameModeLabel.setStyle("-fx-text-fill: #f7768e;");
+            } else {
+                gameModeLabel.setStyle("-fx-text-fill: #7aa2f7;");
+            }
+        }
+    }
+
     private void setupTimerLabel() {
         if (timerLabel != null) {
             gameTimer.elapsedSecondsProperty().addListener((observable, oldValue, newValue) -> {
-                timerLabel.setText(formatTime(newValue.intValue()));
+                if (gameMode == GameMode.ZEN) {
+                    timerLabel.setText(formatTime(newValue.intValue()));
+                }
             });
             timerLabel.getStyleClass().add("timerClass");
             timerLabel.setText(formatTime(0));
         }
+    }
+
+    private void setupBlitzTimer() {
+        blitzTimeRemaining = BLITZ_TIME_SECONDS;
+        blitzTimer = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
+            blitzTimeRemaining--;
+            if (timerLabel != null) {
+                timerLabel.setText(formatTime(blitzTimeRemaining));
+
+                if (blitzTimeRemaining <= 30) {
+                    timerLabel.setStyle("-fx-text-fill: #f7768e;");
+                }
+            }
+
+            if (blitzTimeRemaining <= 0) {
+                blitzTimer.stop();
+                gameOver();
+            }
+        }));
+        blitzTimer.setCycleCount(Timeline.INDEFINITE);
     }
 
     private String formatTime(int totalSeconds) {
@@ -259,7 +308,16 @@ public class GuiController implements Initializable {
         ));
         timeLine.setCycleCount(Timeline.INDEFINITE);
         timeLine.play();
-        gameTimer.start();
+
+        if (gameMode == GameMode.ZEN) {
+            gameTimer.start();
+        } else if (gameMode == GameMode.BLITZ) {
+            setupBlitzTimer();
+            blitzTimer.play();
+            if (timerLabel != null) {
+                timerLabel.setText(formatTime(BLITZ_TIME_SECONDS));
+            }
+        }
     }
 
     private Paint getFillColor(int i) {
@@ -368,7 +426,7 @@ public class GuiController implements Initializable {
             if (holdBrickData != null && holdBrickData.length > 0) {
                 int rows = holdBrickData.length;
                 int cols = holdBrickData[0].length;
-                int maxSize = 4; // Fixed size for hold panel
+                int maxSize = 4;
 
                 int rowPadding = (maxSize - rows) / 2;
                 int colPadding = (maxSize - cols) / 2;
@@ -463,7 +521,6 @@ public class GuiController implements Initializable {
         gamePanel.requestFocus();
     }
 
-
     public void setEventListener(InputEventListener eventListener) {
         this.eventListener = eventListener;
     }
@@ -476,13 +533,17 @@ public class GuiController implements Initializable {
 
     public void bindHighScore(IntegerProperty integerProperty) {
         if (highScoreLabel != null) {
-            highScoreLabel.textProperty().bind(integerProperty.asString("High Score: %d"));
+            highScoreLabel.textProperty().bind(integerProperty.asString("Best: %d"));
         }
     }
 
     public void gameOver() {
         timeLine.stop();
-        gameTimer.stop();
+        if (gameMode == GameMode.ZEN) {
+            gameTimer.stop();
+        } else if (gameMode == GameMode.BLITZ && blitzTimer != null) {
+            blitzTimer.stop();
+        }
         gameOverPanel.setVisible(true);
         isGameOver.setValue(Boolean.TRUE);
         brickPanel.setVisible(false);
@@ -493,7 +554,19 @@ public class GuiController implements Initializable {
 
     public void newGame(ActionEvent actionEvent) {
         timeLine.stop();
-        gameTimer.reset();
+        if (gameMode == GameMode.ZEN) {
+            gameTimer.reset();
+        } else if (gameMode == GameMode.BLITZ) {
+            if (blitzTimer != null) {
+                blitzTimer.stop();
+            }
+            setupBlitzTimer();
+            blitzTimer.play();
+            if (timerLabel != null) {
+                timerLabel.setText(formatTime(BLITZ_TIME_SECONDS));
+                timerLabel.setStyle("");
+            }
+        }
         gameOverPanel.setVisible(false);
         brickPanel.setVisible(true);
         if (shadowPanel != null) {
@@ -502,7 +575,9 @@ public class GuiController implements Initializable {
         eventListener.createNewGame();
         gamePanel.requestFocus();
         timeLine.play();
-        gameTimer.start();
+        if (gameMode == GameMode.ZEN) {
+            gameTimer.start();
+        }
         isPause.setValue(Boolean.FALSE);
         isGameOver.setValue(Boolean.FALSE);
     }
@@ -510,14 +585,45 @@ public class GuiController implements Initializable {
     public void pauseGame(ActionEvent actionEvent) {
         if (isPause.getValue() == Boolean.FALSE) {
             timeLine.stop();
-            gameTimer.stop();
+            if (gameMode == GameMode.ZEN) {
+                gameTimer.stop();
+            } else if (gameMode == GameMode.BLITZ && blitzTimer != null) {
+                blitzTimer.pause();
+            }
             isPause.setValue(Boolean.TRUE);
         } else {
             timeLine.play();
-            gameTimer.start();
+            if (gameMode == GameMode.ZEN) {
+                gameTimer.start();
+            } else if (gameMode == GameMode.BLITZ && blitzTimer != null) {
+                blitzTimer.play();
+            }
             isPause.setValue(Boolean.FALSE);
         }
         gamePanel.requestFocus();
+    }
+
+    private void returnToMenu() {
+        try {
+            if (timeLine != null) {
+                timeLine.stop();
+            }
+            if (gameTimer != null) {
+                gameTimer.stop();
+            }
+            if (blitzTimer != null) {
+                blitzTimer.stop();
+            }
+
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("mainMenu.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = (Stage) gamePanel.getScene().getWindow();
+            Scene scene = new Scene(root, 540, 720);
+            stage.setScene(scene);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public GameTimer getGameTimer() {

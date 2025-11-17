@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.*?>
+<?import java.net.URL?>
+
+<Pane fx:controller="com.comp2042.MainMenuController"
+      xmlns:fx="http://javafx.com/fxml" styleClass="menu-root" prefWidth="540" prefHeight="720">
+
+    <VBox alignment="CENTER" spacing="30" styleClass="menu-container" layoutX="0" layoutY="0" prefWidth="540" prefHeight="720">
+
+        <!-- Title Section -->
+        <VBox alignment="CENTER" spacing="10" styleClass="title-section">
+            <Label text="TetrisJFX" styleClass="main-title"/>
+            <Label text="Choose Your Mode" styleClass="subtitle"/>
+        </VBox>
+
+        <!-- Game Modes Container -->
+        <HBox alignment="CENTER" spacing="30" styleClass="modes-container">
+
+            <!-- ZEN MODE -->
+            <StackPane prefWidth="231" prefHeight="357">
+                <VBox fx:id="zenModePanel" alignment="CENTER" spacing="15" styleClass="mode-panel zen-panel">
+                    <VBox alignment="CENTER" spacing="5">
+                        <Label text="ZEN" styleClass="mode-title"/>
+                        <Label text="♾" styleClass="mode-icon"/>
+                    </VBox>
+
+                    <VBox alignment="CENTER" spacing="8" styleClass="mode-description-container">
+                        <Label text="Endless Mode" styleClass="mode-description"/>
+                        <Label text="No time limit" styleClass="mode-feature"/>
+                        <Label text="Relax and play" styleClass="mode-feature"/>
+                    </VBox>
+
+                    <Label fx:id="zenHighScoreLabel" text="Best: 0" styleClass="mode-highscore"/>
+                </VBox>
+            </StackPane>
+
+            <!-- BLITZ MODE -->
+            <StackPane prefWidth="231" prefHeight="357">
+                <VBox fx:id="blitzModePanel" alignment="CENTER" spacing="15" styleClass="mode-panel blitz-panel">
+                    <VBox alignment="CENTER" spacing="5">
+                        <Label text="BLITZ" styleClass="mode-title"/>
+                        <Label text="⚡" styleClass="mode-icon"/>
+                    </VBox>
+
+                    <VBox alignment="CENTER" spacing="8" styleClass="mode-description-container">
+                        <Label text="Timed Mode" styleClass="mode-description"/>
+                        <Label text="2 minute limit" styleClass="mode-feature"/>
+                        <Label text="Maximum score" styleClass="mode-feature"/>
+                    </VBox>
+
+                    <Label fx:id="blitzHighScoreLabel" text="Best: 0" styleClass="mode-highscore"/>
+                </VBox>
+            </StackPane>
+
+        </HBox>
+
+        <!-- Footer Info -->
+        <VBox alignment="CENTER" spacing="5" styleClass="footer-info">
+            <Label text="Press N to return to menu during game" styleClass="footer-text"/>
+        </VBox>
+
+    </VBox>
+
+    <stylesheets>
+        <URL value="@menu_style.css"/>
+    </stylesheets>
+</Pane>
