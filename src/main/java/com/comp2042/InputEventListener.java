@@ -15,4 +15,8 @@ public interface InputEventListener {
     ViewData onHoldEvent(MoveEvent event);
 
     void createNewGame();
+
+    int getCurrentScore();
+
+    int getCurrentHighScore();
 }

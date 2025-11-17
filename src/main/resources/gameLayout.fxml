@@ -40,11 +40,22 @@
         <!-- Main Game Area -->
         <HBox styleClass="game-area" alignment="TOP_CENTER" spacing="30">
 
-            <!-- Hold Panel -->
-            <VBox styleClass="side-panel" spacing="5" alignment="TOP_CENTER" prefWidth="100" prefHeight="140">
-                <Label text="HOLD" styleClass="panel-title"/>
-                <VBox styleClass="brick-display-container" alignment="CENTER">
-                    <GridPane fx:id="holdBrickPanel" vgap="1" hgap="1" alignment="CENTER"/>
+            <!-- Left Side: Hold Panel + Blitz Level Panel -->
+            <VBox spacing="10" alignment="TOP_CENTER">
+                <!-- Hold Panel -->
+                <VBox styleClass="side-panel" spacing="5" alignment="TOP_CENTER" prefWidth="100" prefHeight="140">
+                    <Label text="HOLD" styleClass="panel-title"/>
+                    <VBox styleClass="brick-display-container" alignment="CENTER">
+                        <GridPane fx:id="holdBrickPanel" vgap="1" hgap="1" alignment="CENTER"/>
+                    </VBox>
+                </VBox>
+
+                <VBox fx:id="blitzLevelPanel" styleClass="side-panel" spacing="5" alignment="TOP_CENTER" prefWidth="100" prefHeight="140" managed="false" visible="false">
+                    <Label text="LEVEL" styleClass="panel-title"/>
+                    <VBox styleClass="brick-display-container" alignment="CENTER" spacing="5">
+                        <Label fx:id="blitzLevelLabel" text="1" styleClass="blitz-level-text"/>
+                        <Label fx:id="blitzProgressLabel" text="0/3 LINES" styleClass="blitz-progress-text"/>
+                    </VBox>
                 </VBox>
             </VBox>
 

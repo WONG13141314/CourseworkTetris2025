@@ -81,6 +81,33 @@
     -fx-alignment: CENTER;
 }
 
+.brick-display-container {
+    -fx-padding: 8px;
+    -fx-background-color: rgba(22, 25, 37, 0.6);
+    -fx-background-radius: 6px;
+    -fx-min-width: 80px;
+    -fx-min-height: 80px;
+    -fx-pref-width: 80px;
+    -fx-pref-height: 80px;
+    -fx-alignment: CENTER;
+}
+
+/* Blitz Level Panel */
+.blitz-level-text {
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #f7768e;
+    -fx-font-family: "Segoe UI", "Consolas", monospace;
+    -fx-effect: dropshadow(gaussian, rgba(247, 118, 142, 0.3), 4, 0.6, 0, 1);
+}
+
+.blitz-progress-text {
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #c0caf5;
+    -fx-font-family: "Segoe UI", "Consolas", monospace;
+}
+
 /* Game Board */
 .game-board-container {
     -fx-padding: 10px;
@@ -160,6 +187,26 @@
     -fx-font-weight: bold;
     -fx-text-fill: #f7768e;
     -fx-effect: dropshadow(gaussian, rgba(247, 118, 142, 0.4), 8, 0.7, 0, 2);
+}
+
+.game-over-score {
+    -fx-font-size: 18px;
+    -fx-text-fill: #c0caf5;
+    -fx-font-weight: bold;
+    -fx-font-family: "Segoe UI", "Consolas", monospace;
+}
+
+.game-over-highscore {
+    -fx-font-size: 16px;
+    -fx-text-fill: #7aa2f7;
+    -fx-font-weight: bold;
+    -fx-font-family: "Segoe UI", "Consolas", monospace;
+}
+
+.game-over-instruction {
+    -fx-text-fill: #a9b1d6;
+    -fx-font-size: 12px;
+    -fx-font-family: 'Segoe UI';
 }
 
 /* Active Brick Panel - Visible and properly positioned */

@@ -13,7 +13,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.effect.Reflection;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
@@ -25,6 +24,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -92,6 +92,17 @@ public class GuiController implements Initializable {
 
     @FXML
     private Label gameModeLabel;
+
+    private BlitzLevel blitzLevel;
+
+    @FXML
+    private Label blitzLevelLabel;
+
+    @FXML
+    private Label blitzProgressLabel;
+
+    @FXML
+    private VBox blitzLevelPanel;
 
     private GameTimer gameTimer;
 
@@ -180,15 +191,26 @@ public class GuiController implements Initializable {
             }
         });
         gameOverPanel.setVisible(false);
-
-        final Reflection reflection = new Reflection();
-        reflection.setFraction(0.8);
-        reflection.setTopOpacity(0.9);
-        reflection.setTopOffset(-12);
     }
 
     public void setGameMode(GameMode mode) {
         this.gameMode = mode;
+
+        if (mode == GameMode.BLITZ) {
+            blitzLevel = new BlitzLevel();
+            setupBlitzLevelDisplay();
+
+            if (blitzLevelPanel != null) {
+                blitzLevelPanel.setVisible(true);
+                blitzLevelPanel.setManaged(true);
+            }
+        } else {
+            if (blitzLevelPanel != null) {
+                blitzLevelPanel.setVisible(false);
+                blitzLevelPanel.setManaged(false);
+            }
+        }
+
         if (gameModeLabel != null) {
             gameModeLabel.setText(mode == GameMode.ZEN ? "ZEN MODE" : "BLITZ MODE");
             if (mode == GameMode.BLITZ) {
@@ -196,6 +218,44 @@ public class GuiController implements Initializable {
             } else {
                 gameModeLabel.setStyle("-fx-text-fill: #7aa2f7;");
             }
+        }
+    }
+
+    private void setupBlitzLevelDisplay() {
+        if (blitzLevelLabel != null && blitzProgressLabel != null) {
+            blitzLevel.levelProperty().addListener((obs, oldVal, newVal) -> {
+                blitzLevelLabel.setText("LEVEL " + newVal);
+                updateGameSpeed();
+            });
+
+            blitzLevel.linesClearedProperty().addListener((obs, oldVal, newVal) -> {
+                updateProgressLabel();
+            });
+
+            blitzLevel.linesNeededProperty().addListener((obs, oldVal, newVal) -> {
+                updateProgressLabel();
+            });
+
+            updateProgressLabel();
+            blitzLevelLabel.setText("LEVEL 1");
+        }
+    }
+
+    private void updateProgressLabel() {
+        if (blitzProgressLabel != null && blitzLevel != null) {
+            blitzProgressLabel.setText(blitzLevel.getProgressText() + " LINES");
+        }
+    }
+
+    private void updateGameSpeed() {
+        if (gameMode == GameMode.BLITZ && blitzLevel != null && timeLine != null) {
+            timeLine.stop();
+            timeLine = new Timeline(new KeyFrame(
+                    Duration.millis(blitzLevel.getDropSpeed()),
+                    ae -> moveDown(new MoveEvent(EventType.DOWN, EventSource.THREAD))
+            ));
+            timeLine.setCycleCount(Timeline.INDEFINITE);
+            timeLine.play();
         }
     }
 
@@ -499,6 +559,10 @@ public class GuiController implements Initializable {
         if (isPause.getValue() == Boolean.FALSE) {
             DownData downData = eventListener.onDownEvent(event);
             if (downData.getClearRow() != null && downData.getClearRow().getLinesRemoved() > 0) {
+                if (gameMode == GameMode.BLITZ && blitzLevel != null) {
+                    blitzLevel.addLines(downData.getClearRow().getLinesRemoved());
+                }
+
                 NotificationPanel notificationPanel = new NotificationPanel("+" + downData.getClearRow().getScoreBonus());
                 groupNotification.getChildren().add(notificationPanel);
                 notificationPanel.showScore(groupNotification.getChildren());
@@ -512,6 +576,10 @@ public class GuiController implements Initializable {
         if (isPause.getValue() == Boolean.FALSE) {
             DownData downData = eventListener.onHardDropEvent(event);
             if (downData.getClearRow() != null && downData.getClearRow().getLinesRemoved() > 0) {
+                if (gameMode == GameMode.BLITZ && blitzLevel != null) {
+                    blitzLevel.addLines(downData.getClearRow().getLinesRemoved());
+                }
+
                 NotificationPanel notificationPanel = new NotificationPanel("+" + downData.getClearRow().getScoreBonus());
                 groupNotification.getChildren().add(notificationPanel);
                 notificationPanel.showScore(groupNotification.getChildren());
@@ -520,7 +588,6 @@ public class GuiController implements Initializable {
         }
         gamePanel.requestFocus();
     }
-
     public void setEventListener(InputEventListener eventListener) {
         this.eventListener = eventListener;
     }
@@ -544,6 +611,13 @@ public class GuiController implements Initializable {
         } else if (gameMode == GameMode.BLITZ && blitzTimer != null) {
             blitzTimer.stop();
         }
+
+        int currentScore = eventListener.getCurrentScore();
+        int currentHighScore = eventListener.getCurrentHighScore();
+
+        boolean showScores = (gameMode == GameMode.BLITZ);
+        gameOverPanel.updateScores(currentScore, currentHighScore, showScores);
+
         gameOverPanel.setVisible(true);
         isGameOver.setValue(Boolean.TRUE);
         brickPanel.setVisible(false);
@@ -560,6 +634,11 @@ public class GuiController implements Initializable {
             if (blitzTimer != null) {
                 blitzTimer.stop();
             }
+            if (blitzLevel != null) {
+                blitzLevel.reset();
+                updateProgressLabel();
+                blitzLevelLabel.setText("LEVEL 1");
+            }
             setupBlitzTimer();
             blitzTimer.play();
             if (timerLabel != null) {
@@ -574,12 +653,20 @@ public class GuiController implements Initializable {
         }
         eventListener.createNewGame();
         gamePanel.requestFocus();
-        timeLine.play();
+
+        if (gameMode == GameMode.BLITZ) {
+            updateGameSpeed();
+        } else {
+            timeLine.play();
+        }
+
         if (gameMode == GameMode.ZEN) {
             gameTimer.start();
         }
         isPause.setValue(Boolean.FALSE);
         isGameOver.setValue(Boolean.FALSE);
+
+        gameOverPanel.updateScores(0, 0, false);
     }
 
     public void pauseGame(ActionEvent actionEvent) {
@@ -624,9 +711,5 @@ public class GuiController implements Initializable {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    public GameTimer getGameTimer() {
-        return gameTimer;
     }
 }

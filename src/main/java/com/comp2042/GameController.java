@@ -104,7 +104,13 @@ public class GameController implements InputEventListener {
         return board.getViewData();
     }
 
-    public GameMode getGameMode() {
-        return gameMode;
+    @Override
+    public int getCurrentScore() {
+        return board.getScore().scoreProperty().get();
+    }
+
+    @Override
+    public int getCurrentHighScore() {
+        return board.getScore().highScoreProperty().get();
     }
 }
