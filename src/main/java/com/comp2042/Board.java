@@ -31,4 +31,6 @@ public interface Board {
     int[][] getHoldBrickData();
 
     boolean canHold();
+
+    boolean wasBoardCleared();
 }

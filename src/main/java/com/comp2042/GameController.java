@@ -23,13 +23,21 @@ public class GameController implements InputEventListener {
     public DownData onDownEvent(MoveEvent event) {
         boolean canMove = board.moveBrickDown();
         ClearRow clearRow = null;
+        boolean boardCleared = false;
+
         if (!canMove) {
             board.mergeBrickToBackground();
             clearRow = board.clearRows();
             if (clearRow.getLinesRemoved() > 0) {
                 board.getScore().add(clearRow.getScoreBonus());
             }
-            if (board.createNewBrick()) {
+
+            boolean gameOver = board.createNewBrick();
+
+            if (board.wasBoardCleared()) {
+                boardCleared = true;
+                viewGuiController.refreshGameBackground(board.getBoardMatrix());
+            } else if (gameOver) {
                 viewGuiController.gameOver();
             }
 
@@ -40,7 +48,7 @@ public class GameController implements InputEventListener {
                 board.getScore().add(1);
             }
         }
-        return new DownData(clearRow, board.getViewData());
+        return new DownData(clearRow, board.getViewData(), boardCleared);
     }
 
     @Override
@@ -71,6 +79,7 @@ public class GameController implements InputEventListener {
     public DownData onHardDropEvent(MoveEvent event) {
         ClearRow clearRow = null;
         int dropDistance = 0;
+        boolean boardCleared = false;
 
         while (board.moveBrickDown()) {
             dropDistance++;
@@ -87,13 +96,18 @@ public class GameController implements InputEventListener {
             board.getScore().add(clearRow.getScoreBonus());
         }
 
-        if (board.createNewBrick()) {
+        boolean gameOver = board.createNewBrick();
+
+        if (board.wasBoardCleared()) {
+            boardCleared = true;
+            viewGuiController.refreshGameBackground(board.getBoardMatrix());
+        } else if (gameOver) {
             viewGuiController.gameOver();
         }
 
         viewGuiController.refreshGameBackground(board.getBoardMatrix());
 
-        return new DownData(clearRow, board.getViewData());
+        return new DownData(clearRow, board.getViewData(), boardCleared);
     }
 
     @Override

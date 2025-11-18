@@ -117,12 +117,15 @@
     <!-- Active Brick Panel -->
     <GridPane fx:id="brickPanel" vgap="1" hgap="1" styleClass="active-brick-panel" layoutX="170" layoutY="160"/>
 
-    <!-- Game Over Panel & Notifications -->
-    <Group fx:id="groupNotification" layoutX="120" layoutY="280">
+    <!-- Game Over Panel -->
+    <Group fx:id="gameOverGroup" layoutX="120" layoutY="280">
         <VBox alignment="CENTER">
             <GameOverPanel fx:id="gameOverPanel"/>
         </VBox>
     </Group>
+
+    <!-- Notifications Group (centered) -->
+    <Group fx:id="groupNotification" layoutX="160" layoutY="280"/>
 
     <stylesheets>
         <URL value="@window_style.css"/>

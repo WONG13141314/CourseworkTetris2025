@@ -19,6 +19,7 @@ public class SimpleBoard implements Board {
     private Brick holdBrick;
     private boolean canHold = true;
     private boolean hasHoldBrick = false;
+    private boolean boardCleared = false;
 
     public SimpleBoard(int width, int height, GameMode gameMode) {
         this.width = width;
@@ -122,6 +123,8 @@ public class SimpleBoard implements Board {
 
     @Override
     public boolean createNewBrick() {
+
+        boardCleared = false;
         Brick currentBrick = brickGenerator.getBrick();
         brickRotator.setBrick(currentBrick);
         currentOffset = new Point(3, 0);
@@ -132,6 +135,7 @@ public class SimpleBoard implements Board {
 
         if (gameOver && gameMode == GameMode.ZEN) {
             clearEntireBoard();
+            boardCleared = true; // Set the flag when board is cleared
             gameOver = MatrixOperations.intersect(currentGameMatrix, brickRotator.getCurrentShape(),
                     (int) currentOffset.getX(), (int) currentOffset.getY());
         }
@@ -241,8 +245,14 @@ public class SimpleBoard implements Board {
         holdBrick = null;
         hasHoldBrick = false;
         canHold = true;
+        boardCleared = false;
         brickGenerator.reset();
         createNewBrick();
+    }
+
+    @Override
+    public boolean wasBoardCleared() {
+        return boardCleared;
     }
 
     public GameMode getGameMode() {

@@ -40,9 +40,8 @@ public class GuiController implements Initializable {
 
     private double getAbsoluteX(javafx.scene.Node node) {
         double x = 0;
-        while (node != null) {
+        while (node != null && node.getParent() != null) {
             x += node.getLayoutX();
-            if (node.getParent() == null) break;
             node = node.getParent();
         }
         return x;
@@ -50,9 +49,8 @@ public class GuiController implements Initializable {
 
     private double getAbsoluteY(javafx.scene.Node node) {
         double y = 0;
-        while (node != null) {
+        while (node != null && node.getParent() != null) {
             y += node.getLayoutY();
-            if (node.getParent() == null) break;
             node = node.getParent();
         }
         return y;
@@ -191,6 +189,13 @@ public class GuiController implements Initializable {
             }
         });
         gameOverPanel.setVisible(false);
+    }
+
+    private void positionBrickPanel(ViewData brick) {
+        double brickX = getAbsoluteX(gamePanel) + brick.getxPosition() * (BRICK_SIZE + 1);
+        double brickY = getAbsoluteY(gamePanel) + (brick.getyPosition() - 2) * (BRICK_SIZE + 1);
+        brickPanel.setLayoutX(brickX);
+        brickPanel.setLayoutY(brickY);
     }
 
     public void setGameMode(GameMode mode) {
@@ -340,12 +345,7 @@ public class GuiController implements Initializable {
         }
         updateShadowPosition(brick);
 
-        double gamePanelAbsX = getAbsoluteX(gamePanel);
-        double gamePanelAbsY = getAbsoluteY(gamePanel);
-        double brickX = gamePanelAbsX + brick.getxPosition() * (BRICK_SIZE + 1);
-        double brickY = gamePanelAbsY + (brick.getyPosition() - 2) * (BRICK_SIZE + 1);
-        brickPanel.setLayoutX(brickX);
-        brickPanel.setLayoutY(brickY);
+        positionBrickPanel(brick);
 
         int[][] nextBrickData = brick.getNextBrickData();
         nextBrickRectangles = new Rectangle[nextBrickData.length][nextBrickData[0].length];
@@ -520,12 +520,7 @@ public class GuiController implements Initializable {
     private void refreshBrick(ViewData brick) {
         if (isPause.getValue() == Boolean.FALSE) {
             updateShadowPosition(brick);
-            double gamePanelAbsX = getAbsoluteX(gamePanel);
-            double gamePanelAbsY = getAbsoluteY(gamePanel);
-            double brickX = gamePanelAbsX + brick.getxPosition() * (BRICK_SIZE + 1);
-            double brickY = gamePanelAbsY + (brick.getyPosition() - 2) * (BRICK_SIZE + 1);
-            brickPanel.setLayoutX(brickX);
-            brickPanel.setLayoutY(brickY);
+            positionBrickPanel(brick);
 
             for (int i = 0; i < brick.getBrickData().length; i++) {
                 for (int j = 0; j < brick.getBrickData()[i].length; j++) {
@@ -558,6 +553,7 @@ public class GuiController implements Initializable {
     private void moveDown(MoveEvent event) {
         if (isPause.getValue() == Boolean.FALSE) {
             DownData downData = eventListener.onDownEvent(event);
+
             if (downData.getClearRow() != null && downData.getClearRow().getLinesRemoved() > 0) {
                 if (gameMode == GameMode.BLITZ && blitzLevel != null) {
                     blitzLevel.addLines(downData.getClearRow().getLinesRemoved());
@@ -567,6 +563,13 @@ public class GuiController implements Initializable {
                 groupNotification.getChildren().add(notificationPanel);
                 notificationPanel.showScore(groupNotification.getChildren());
             }
+
+            if (downData.isBoardCleared() && gameMode == GameMode.ZEN) {
+                NotificationPanel notificationPanel = new NotificationPanel("Board Cleared!");
+                groupNotification.getChildren().add(notificationPanel);
+                notificationPanel.showScore(groupNotification.getChildren());
+            }
+
             refreshBrick(downData.getViewData());
         }
         gamePanel.requestFocus();
@@ -575,6 +578,7 @@ public class GuiController implements Initializable {
     private void hardDrop(MoveEvent event) {
         if (isPause.getValue() == Boolean.FALSE) {
             DownData downData = eventListener.onHardDropEvent(event);
+
             if (downData.getClearRow() != null && downData.getClearRow().getLinesRemoved() > 0) {
                 if (gameMode == GameMode.BLITZ && blitzLevel != null) {
                     blitzLevel.addLines(downData.getClearRow().getLinesRemoved());
@@ -584,10 +588,19 @@ public class GuiController implements Initializable {
                 groupNotification.getChildren().add(notificationPanel);
                 notificationPanel.showScore(groupNotification.getChildren());
             }
+
+            // Show board cleared notification AFTER board refresh for Zen mode
+            if (downData.isBoardCleared() && gameMode == GameMode.ZEN) {
+                NotificationPanel notificationPanel = new NotificationPanel("Board Cleared!");
+                groupNotification.getChildren().add(notificationPanel);
+                notificationPanel.showScore(groupNotification.getChildren());
+            }
+
             refreshBrick(downData.getViewData());
         }
         gamePanel.requestFocus();
     }
+
     public void setEventListener(InputEventListener eventListener) {
         this.eventListener = eventListener;
     }

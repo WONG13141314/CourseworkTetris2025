@@ -209,6 +209,14 @@
     -fx-font-family: 'Segoe UI';
 }
 
+/* Score Notification */
+.bonusStyle {
+    -fx-font-size: 30px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-font-family: "Segoe UI", "Arial Black", sans-serif;
+    -fx-effect: dropshadow(gaussian, rgba(122, 162, 247, 0.6), 10, 0.8, 0, 2);
+}
 /* Active Brick Panel - Visible and properly positioned */
 .active-brick-panel {
     -fx-visible: true;
