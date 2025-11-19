@@ -27,13 +27,14 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 
 import java.net.URL;
+import java.util.HashSet;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 public class GuiController implements Initializable {
 
     private static final int BRICK_SIZE = 20;
     private static final int BLITZ_TIME_SECONDS = 120; // 2 minutes
-
     private GameMode gameMode;
     private int blitzTimeRemaining = BLITZ_TIME_SECONDS;
     private Timeline blitzTimer;
@@ -104,6 +105,20 @@ public class GuiController implements Initializable {
 
     private boolean spacePressed = false;
 
+    private final Set<KeyCode> pressedKeys = new HashSet<>();
+
+    private Timeline leftRepeat;
+
+    private Timeline rightRepeat;
+
+    private Timeline downRepeat;
+
+    private Timeline leftDelay;
+
+    private Timeline rightDelay;
+
+    private Timeline downDelay;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         Font.loadFont(getClass().getClassLoader().getResource("digital.ttf").toExternalForm(), 38);
@@ -114,62 +129,129 @@ public class GuiController implements Initializable {
         gamePanel.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent keyEvent) {
-                if (keyEvent.getCode() == KeyCode.SPACE) {
+                KeyCode code = keyEvent.getCode();
+
+                if (code == KeyCode.SPACE) {
                     if (!spacePressed) {
                         spacePressed = true;
                         if (isPause.getValue() == Boolean.FALSE && isGameOver.getValue() == Boolean.FALSE) {
                             hardDrop(new MoveEvent(EventType.HARD_DROP, EventSource.USER));
-                            keyEvent.consume();
                         } else {
                             pauseGame(null);
-                            keyEvent.consume();
                         }
+                        keyEvent.consume();
                     }
                     return;
                 }
 
                 if (isPause.getValue() == Boolean.FALSE && isGameOver.getValue() == Boolean.FALSE) {
-                    boolean moved = false;
 
-                    if (keyEvent.getCode() == KeyCode.LEFT || keyEvent.getCode() == KeyCode.A) {
-                        ViewData viewData = eventListener.onLeftEvent(new MoveEvent(EventType.LEFT, EventSource.USER));
-                        refreshBrick(viewData);
-                        moved = true;
-                        keyEvent.consume();
-                    }
-                    else if (keyEvent.getCode() == KeyCode.RIGHT || keyEvent.getCode() == KeyCode.D) {
-                        ViewData viewData = eventListener.onRightEvent(new MoveEvent(EventType.RIGHT, EventSource.USER));
-                        refreshBrick(viewData);
-                        moved = true;
-                        keyEvent.consume();
-                    }
-                    else if (keyEvent.getCode() == KeyCode.UP || keyEvent.getCode() == KeyCode.W) {
+                    if ((code == KeyCode.UP || code == KeyCode.W) && !pressedKeys.contains(code)) {
                         ViewData viewData = eventListener.onRotateEvent(new MoveEvent(EventType.ROTATE, EventSource.USER));
                         refreshBrick(viewData);
-                        moved = true;
+                        pressedKeys.add(code);
+                        gamePanel.requestFocus();
                         keyEvent.consume();
-                    }
-                    else if (keyEvent.getCode() == KeyCode.DOWN || keyEvent.getCode() == KeyCode.S) {
-                        moveDown(new MoveEvent(EventType.DOWN, EventSource.USER));
-                        moved = true;
-                        keyEvent.consume();
-                    }
-                    else if (keyEvent.getCode() == KeyCode.C || keyEvent.getCode() == KeyCode.SHIFT) {
+                    } else if ((code == KeyCode.C || code == KeyCode.SHIFT) && !pressedKeys.contains(code)) {
                         ViewData viewData = eventListener.onHoldEvent(new MoveEvent(EventType.HOLD, EventSource.USER));
                         refreshBrick(viewData);
-                        moved = true;
+                        pressedKeys.add(code);
+                        gamePanel.requestFocus();
                         keyEvent.consume();
                     }
 
-                    if (moved) {
+                    else if ((code == KeyCode.LEFT || code == KeyCode.A) && !pressedKeys.contains(code)) {
+                        ViewData viewData = eventListener.onLeftEvent(new MoveEvent(EventType.LEFT, EventSource.USER));
+                        refreshBrick(viewData);
+                        pressedKeys.add(code);
+
+                        if (leftRepeat != null) leftRepeat.stop();
+                        if (leftDelay != null) leftDelay.stop();
+
+                        leftDelay = new Timeline(new KeyFrame(Duration.millis(170), e -> {
+                            if (pressedKeys.contains(KeyCode.LEFT) || pressedKeys.contains(KeyCode.A)) {
+                                leftRepeat = new Timeline(new KeyFrame(Duration.millis(50), ev -> {
+                                    if (pressedKeys.contains(KeyCode.LEFT) || pressedKeys.contains(KeyCode.A)) {
+                                        ViewData vd = eventListener.onLeftEvent(new MoveEvent(EventType.LEFT, EventSource.USER));
+                                        refreshBrick(vd);
+                                    } else {
+                                        if (leftRepeat != null) leftRepeat.stop();
+                                    }
+                                }));
+                                leftRepeat.setCycleCount(Timeline.INDEFINITE);
+                                leftRepeat.play();
+                            }
+                        }));
+                        leftDelay.setCycleCount(1);
+                        leftDelay.play();
+
                         gamePanel.requestFocus();
+                        keyEvent.consume();
+                    }
+
+                    else if ((code == KeyCode.RIGHT || code == KeyCode.D) && !pressedKeys.contains(code)) {
+                        ViewData viewData = eventListener.onRightEvent(new MoveEvent(EventType.RIGHT, EventSource.USER));
+                        refreshBrick(viewData);
+                        pressedKeys.add(code);
+
+                        if (rightRepeat != null) rightRepeat.stop();
+                        if (rightDelay != null) rightDelay.stop();
+
+                        rightDelay = new Timeline(new KeyFrame(Duration.millis(170), e -> {
+                            if (pressedKeys.contains(KeyCode.RIGHT) || pressedKeys.contains(KeyCode.D)) {
+                                rightRepeat = new Timeline(new KeyFrame(Duration.millis(50), ev -> {
+                                    if (pressedKeys.contains(KeyCode.RIGHT) || pressedKeys.contains(KeyCode.D)) {
+                                        ViewData vd = eventListener.onRightEvent(new MoveEvent(EventType.RIGHT, EventSource.USER));
+                                        refreshBrick(vd);
+                                    } else {
+                                        if (rightRepeat != null) rightRepeat.stop();
+                                    }
+                                }));
+                                rightRepeat.setCycleCount(Timeline.INDEFINITE);
+                                rightRepeat.play();
+                            }
+                        }));
+                        rightDelay.setCycleCount(1);
+                        rightDelay.play();
+
+                        gamePanel.requestFocus();
+                        keyEvent.consume();
+                    }
+
+                    else if ((code == KeyCode.DOWN || code == KeyCode.S) && !pressedKeys.contains(code)) {
+                        moveDown(new MoveEvent(EventType.DOWN, EventSource.USER));
+                        pressedKeys.add(code);
+
+                        if (downRepeat != null) downRepeat.stop();
+                        if (downDelay != null) downDelay.stop();
+
+                        downDelay = new Timeline(new KeyFrame(Duration.millis(170), e -> {
+                            if (pressedKeys.contains(KeyCode.DOWN) || pressedKeys.contains(KeyCode.S)) {
+                                downRepeat = new Timeline(new KeyFrame(Duration.millis(50), ev -> {
+                                    if (pressedKeys.contains(KeyCode.DOWN) || pressedKeys.contains(KeyCode.S)) {
+                                        moveDown(new MoveEvent(EventType.DOWN, EventSource.USER));
+                                    } else {
+                                        if (downRepeat != null) downRepeat.stop();
+                                    }
+                                }));
+                                downRepeat.setCycleCount(Timeline.INDEFINITE);
+                                downRepeat.play();
+                            }
+                        }));
+                        downDelay.setCycleCount(1);
+                        downDelay.play();
+
+                        gamePanel.requestFocus();
+                        keyEvent.consume();
                     }
                 }
-                if (keyEvent.getCode() == KeyCode.ESCAPE) {
+
+                // Menu controls
+                if (code == KeyCode.ESCAPE) {
                     returnToMenu();
                     keyEvent.consume();
                 }
-                if (keyEvent.getCode() == KeyCode.N) {
+                if (code == KeyCode.N) {
                     newGame(null);
                     keyEvent.consume();
                 }
@@ -179,10 +261,44 @@ public class GuiController implements Initializable {
         gamePanel.setOnKeyReleased(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent keyEvent) {
-                if (keyEvent.getCode() == KeyCode.SPACE) {
+                KeyCode code = keyEvent.getCode();
+
+                if (code == KeyCode.SPACE) {
                     spacePressed = false;
-                    keyEvent.consume();
                 }
+
+                pressedKeys.remove(code);
+
+                if (code == KeyCode.LEFT || code == KeyCode.A) {
+                    if (leftRepeat != null) {
+                        leftRepeat.stop();
+                        leftRepeat = null;
+                    }
+                    if (leftDelay != null) {
+                        leftDelay.stop();
+                        leftDelay = null;
+                    }
+                } else if (code == KeyCode.RIGHT || code == KeyCode.D) {
+                    if (rightRepeat != null) {
+                        rightRepeat.stop();
+                        rightRepeat = null;
+                    }
+                    if (rightDelay != null) {
+                        rightDelay.stop();
+                        rightDelay = null;
+                    }
+                } else if (code == KeyCode.DOWN || code == KeyCode.S) {
+                    if (downRepeat != null) {
+                        downRepeat.stop();
+                        downRepeat = null;
+                    }
+                    if (downDelay != null) {
+                        downDelay.stop();
+                        downDelay = null;
+                    }
+                }
+
+                keyEvent.consume();
             }
         });
     }
