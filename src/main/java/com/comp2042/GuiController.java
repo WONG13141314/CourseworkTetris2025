@@ -38,24 +38,6 @@ public class GuiController implements Initializable {
     private int blitzTimeRemaining = BLITZ_TIME_SECONDS;
     private Timeline blitzTimer;
 
-    private double getAbsoluteX(javafx.scene.Node node) {
-        double x = 0;
-        while (node != null && node.getParent() != null) {
-            x += node.getLayoutX();
-            node = node.getParent();
-        }
-        return x;
-    }
-
-    private double getAbsoluteY(javafx.scene.Node node) {
-        double y = 0;
-        while (node != null && node.getParent() != null) {
-            y += node.getLayoutY();
-            node = node.getParent();
-        }
-        return y;
-    }
-
     @FXML
     private GridPane gamePanel;
 
@@ -120,6 +102,8 @@ public class GuiController implements Initializable {
 
     private final BooleanProperty isGameOver = new SimpleBooleanProperty();
 
+    private boolean spacePressed = false;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         Font.loadFont(getClass().getClassLoader().getResource("digital.ttf").toExternalForm(), 38);
@@ -131,12 +115,15 @@ public class GuiController implements Initializable {
             @Override
             public void handle(KeyEvent keyEvent) {
                 if (keyEvent.getCode() == KeyCode.SPACE) {
-                    if (isPause.getValue() == Boolean.FALSE && isGameOver.getValue() == Boolean.FALSE) {
-                        hardDrop(new MoveEvent(EventType.HARD_DROP, EventSource.USER));
-                        keyEvent.consume();
-                    } else {
-                        pauseGame(null);
-                        keyEvent.consume();
+                    if (!spacePressed) {
+                        spacePressed = true;
+                        if (isPause.getValue() == Boolean.FALSE && isGameOver.getValue() == Boolean.FALSE) {
+                            hardDrop(new MoveEvent(EventType.HARD_DROP, EventSource.USER));
+                            keyEvent.consume();
+                        } else {
+                            pauseGame(null);
+                            keyEvent.consume();
+                        }
                     }
                     return;
                 }
@@ -189,14 +176,29 @@ public class GuiController implements Initializable {
             }
         });
         gameOverPanel.setVisible(false);
+        gamePanel.setOnKeyReleased(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent keyEvent) {
+                if (keyEvent.getCode() == KeyCode.SPACE) {
+                    spacePressed = false;
+                    keyEvent.consume();
+                }
+            }
+        });
     }
 
     private void positionBrickPanel(ViewData brick) {
-        double brickX = getAbsoluteX(gamePanel) + brick.getxPosition() * (BRICK_SIZE + 1);
-        double brickY = getAbsoluteY(gamePanel) + (brick.getyPosition() - 2) * (BRICK_SIZE + 1);
+        double gamePanelX = 160;
+        double gamePanelY = 120;
+
+        double brickX = gamePanelX + 5 + brick.getxPosition() * (BRICK_SIZE + 1);
+        double brickY = gamePanelY - 2 + (brick.getyPosition() - 2) * (BRICK_SIZE + 1);
+
         brickPanel.setLayoutX(brickX);
         brickPanel.setLayoutY(brickY);
     }
+
+
 
     public void setGameMode(GameMode mode) {
         this.gameMode = mode;

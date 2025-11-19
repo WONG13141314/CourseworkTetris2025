@@ -58,7 +58,7 @@
 
         <!-- Footer Info -->
         <VBox alignment="CENTER" spacing="5" styleClass="footer-info">
-            <Label text="Press N to return to menu during game" styleClass="footer-text"/>
+            <Label text="Press ESC to return to menu during game" styleClass="footer-text"/>
         </VBox>
 
     </VBox>
