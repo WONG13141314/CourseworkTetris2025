@@ -451,8 +451,6 @@ public class GuiController implements Initializable {
                 Rectangle shadow = new Rectangle(BRICK_SIZE, BRICK_SIZE);
                 shadow.setFill(getShadowColor(brick.getBrickData()[i][j]));
                 shadow.setOpacity(0.3);
-                shadow.setArcHeight(9);
-                shadow.setArcWidth(9);
                 shadowRectangles[i][j] = shadow;
                 shadowPanel.add(shadow, j, i);
             }
@@ -664,8 +662,6 @@ public class GuiController implements Initializable {
 
     private void setRectangleData(int color, Rectangle rectangle) {
         rectangle.setFill(getFillColor(color));
-        rectangle.setArcHeight(9);
-        rectangle.setArcWidth(9);
     }
 
     private void moveDown(MoveEvent event) {
