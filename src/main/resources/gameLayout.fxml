@@ -107,6 +107,10 @@
                     <Label text="RESTART" styleClass="control-description"/>
                 </VBox>
                 <VBox alignment="CENTER" spacing="2">
+                    <Label text="P" styleClass="control-key"/>
+                    <Label text="PAUSE" styleClass="control-description"/>
+                </VBox>
+                <VBox alignment="CENTER" spacing="2">
                     <Label text="ESC" styleClass="control-key"/>
                     <Label text="MAIN MENU" styleClass="control-description"/>
                 </VBox>
@@ -121,6 +125,18 @@
     <Group fx:id="gameOverGroup" layoutX="120" layoutY="280">
         <VBox alignment="CENTER">
             <GameOverPanel fx:id="gameOverPanel"/>
+        </VBox>
+    </Group>
+
+    <!-- Pause Panel -->
+    <Group fx:id="pauseGroup" layoutX="135" layoutY="280" visible="false">
+        <VBox alignment="CENTER">
+            <VBox styleClass="game-over-container" alignment="CENTER" spacing="15">
+                <Label text="GAME PAUSED" styleClass="gameOverStyle"/>
+                <VBox alignment="CENTER" spacing="8">
+                    <Label text="Press 'N' to Restart  |  Press 'ESC' for Main Menu" styleClass="game-over-instruction"/>
+                </VBox>
+            </VBox>
         </VBox>
     </Group>
 

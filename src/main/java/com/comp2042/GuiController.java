@@ -46,6 +46,9 @@ public class GuiController implements Initializable {
     private Group groupNotification;
 
     @FXML
+    private Group pauseGroup;
+
+    @FXML
     private GridPane brickPanel;
 
     @FXML
@@ -243,6 +246,11 @@ public class GuiController implements Initializable {
 
                         gamePanel.requestFocus();
                         keyEvent.consume();
+                    }else if (code == KeyCode.P && !pressedKeys.contains(code)) {
+                        pauseGame(null);
+                        pressedKeys.add(code);
+                        gamePanel.requestFocus();
+                        keyEvent.consume();
                     }
                 }
 
@@ -253,6 +261,12 @@ public class GuiController implements Initializable {
                 }
                 if (code == KeyCode.N) {
                     newGame(null);
+                    keyEvent.consume();
+                }
+                if (code == KeyCode.P && !pressedKeys.contains(code)) {
+                    pauseGame(null);
+                    pressedKeys.add(code);
+                    gamePanel.requestFocus();
                     keyEvent.consume();
                 }
             }
@@ -296,6 +310,8 @@ public class GuiController implements Initializable {
                         downDelay.stop();
                         downDelay = null;
                     }
+                }else if (code == KeyCode.P) {
+                    pressedKeys.remove(code);
                 }
 
                 keyEvent.consume();
@@ -731,6 +747,35 @@ public class GuiController implements Initializable {
         }
     }
 
+    public void pauseGame(ActionEvent actionEvent) {
+        if (isPause.getValue() == Boolean.FALSE) {
+            timeLine.stop();
+            if (gameMode == GameMode.ZEN) {
+                gameTimer.stop();
+            } else if (gameMode == GameMode.BLITZ && blitzTimer != null) {
+                blitzTimer.pause();
+            }
+            isPause.setValue(Boolean.TRUE);
+
+            if (pauseGroup != null) {
+                pauseGroup.setVisible(true);
+            }
+        } else {
+            timeLine.play();
+            if (gameMode == GameMode.ZEN) {
+                gameTimer.start();
+            } else if (gameMode == GameMode.BLITZ && blitzTimer != null) {
+                blitzTimer.play();
+            }
+            isPause.setValue(Boolean.FALSE);
+
+            if (pauseGroup != null) {
+                pauseGroup.setVisible(false);
+            }
+        }
+        gamePanel.requestFocus();
+    }
+
     public void gameOver() {
         timeLine.stop();
         if (gameMode == GameMode.ZEN) {
@@ -774,10 +819,15 @@ public class GuiController implements Initializable {
             }
         }
         gameOverPanel.setVisible(false);
+        if (pauseGroup != null) {
+            pauseGroup.setVisible(false);
+        }
+
         brickPanel.setVisible(true);
         if (shadowPanel != null) {
             shadowPanel.setVisible(true);
         }
+
         eventListener.createNewGame();
         gamePanel.requestFocus();
 
@@ -794,27 +844,6 @@ public class GuiController implements Initializable {
         isGameOver.setValue(Boolean.FALSE);
 
         gameOverPanel.updateScores(0, 0, false);
-    }
-
-    public void pauseGame(ActionEvent actionEvent) {
-        if (isPause.getValue() == Boolean.FALSE) {
-            timeLine.stop();
-            if (gameMode == GameMode.ZEN) {
-                gameTimer.stop();
-            } else if (gameMode == GameMode.BLITZ && blitzTimer != null) {
-                blitzTimer.pause();
-            }
-            isPause.setValue(Boolean.TRUE);
-        } else {
-            timeLine.play();
-            if (gameMode == GameMode.ZEN) {
-                gameTimer.start();
-            } else if (gameMode == GameMode.BLITZ && blitzTimer != null) {
-                blitzTimer.play();
-            }
-            isPause.setValue(Boolean.FALSE);
-        }
-        gamePanel.requestFocus();
     }
 
     private void returnToMenu() {
