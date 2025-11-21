@@ -387,14 +387,19 @@ public class GuiController implements Initializable {
     }
 
     private void updateGameSpeed() {
-        if (gameMode == GameMode.BLITZ && blitzLevel != null && timeLine != null) {
-            timeLine.stop();
-            timeLine = new Timeline(new KeyFrame(
-                    Duration.millis(blitzLevel.getDropSpeed()),
-                    ae -> moveDown(new MoveEvent(EventType.DOWN, EventSource.THREAD))
-            ));
-            timeLine.setCycleCount(Timeline.INDEFINITE);
-            timeLine.play();
+        if (gameMode == GameMode.BLITZ && blitzLevel != null) {
+            if (timeLine != null) {
+                timeLine.stop();
+            }
+
+            if (isPause.getValue() == Boolean.FALSE && isGameOver.getValue() == Boolean.FALSE) {
+                timeLine = new Timeline(new KeyFrame(
+                        Duration.millis(blitzLevel.getDropSpeed()),
+                        ae -> moveDown(new MoveEvent(EventType.DOWN, EventSource.THREAD))
+                ));
+                timeLine.setCycleCount(Timeline.INDEFINITE);
+                timeLine.play();
+            }
         }
     }
 
@@ -411,20 +416,33 @@ public class GuiController implements Initializable {
     }
 
     private void setupBlitzTimer() {
+        if (blitzTimer != null) {
+            blitzTimer.stop();
+        }
+
         blitzTimeRemaining = BLITZ_TIME_SECONDS;
-        blitzTimer = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
-            blitzTimeRemaining--;
-            if (timerLabel != null) {
-                timerLabel.setText(formatTime(blitzTimeRemaining));
 
-                if (blitzTimeRemaining <= 30) {
-                    timerLabel.setStyle("-fx-text-fill: #f7768e;");
+        if (timerLabel != null) {
+            timerLabel.setText(formatTime(blitzTimeRemaining));
+            timerLabel.setStyle("");
+        }
+
+        blitzTimer = new Timeline(new KeyFrame(Duration.seconds(1.0), e -> {
+            if (isPause.getValue() == Boolean.FALSE && isGameOver.getValue() == Boolean.FALSE) {
+                blitzTimeRemaining--;
+
+                if (timerLabel != null) {
+                    timerLabel.setText(formatTime(blitzTimeRemaining));
+
+                    if (blitzTimeRemaining <= 30) {
+                        timerLabel.setStyle("-fx-text-fill: #f7768e;");
+                    }
                 }
-            }
 
-            if (blitzTimeRemaining <= 0) {
-                blitzTimer.stop();
-                gameOver();
+                if (blitzTimeRemaining <= 0) {
+                    blitzTimer.stop();
+                    gameOver();
+                }
             }
         }));
         blitzTimer.setCycleCount(Timeline.INDEFINITE);
