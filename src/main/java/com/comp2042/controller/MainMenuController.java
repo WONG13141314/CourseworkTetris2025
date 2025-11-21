@@ -1,7 +1,10 @@
-package com.comp2042;
+package com.comp2042.controller;
 
+import com.comp2042.enums.GameMode;
+import com.comp2042.model.Score;
+import com.comp2042.util.SoundManager;
+import com.comp2042.view.GuiController;
 import javafx.animation.ScaleTransition;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;

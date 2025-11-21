@@ -1,4 +1,8 @@
-package com.comp2042;
+package com.comp2042.controller;
+
+import com.comp2042.model.data.DownData;
+import com.comp2042.model.data.MoveEvent;
+import com.comp2042.model.data.ViewData;
 
 public interface InputEventListener {
 

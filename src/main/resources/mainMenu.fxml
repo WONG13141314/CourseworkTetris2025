@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.*?>
 <?import java.net.URL?>
 
-<Pane fx:controller="com.comp2042.MainMenuController"
+<Pane fx:controller="com.comp2042.controller.MainMenuController"
       xmlns:fx="http://javafx.com/fxml" styleClass="menu-root" prefWidth="540" prefHeight="720">
 
     <VBox alignment="CENTER" spacing="30" styleClass="menu-container" layoutX="0" layoutY="0" prefWidth="540" prefHeight="720">
