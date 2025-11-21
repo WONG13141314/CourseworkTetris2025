@@ -122,8 +122,12 @@ public class GuiController implements Initializable {
 
     private Timeline downDelay;
 
+    private SoundManager soundManager;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        soundManager = SoundManager.getInstance();
+        soundManager.playBackgroundMusic();
         Font.loadFont(getClass().getClassLoader().getResource("digital.ttf").toExternalForm(), 38);
         gamePanel.setFocusTraversable(true);
         gamePanel.requestFocus();
@@ -139,11 +143,19 @@ public class GuiController implements Initializable {
                         spacePressed = true;
                         if (isPause.getValue() == Boolean.FALSE && isGameOver.getValue() == Boolean.FALSE) {
                             hardDrop(new MoveEvent(EventType.HARD_DROP, EventSource.USER));
-                        } else {
-                            pauseGame(null);
                         }
                         keyEvent.consume();
                     }
+                    return;
+                }
+
+                if (code == KeyCode.P && !pressedKeys.contains(code)) {
+                    if (isGameOver.getValue() == Boolean.FALSE) {
+                        pauseGame(null);
+                        pressedKeys.add(code);
+                    }
+                    gamePanel.requestFocus();
+                    keyEvent.consume();
                     return;
                 }
 
@@ -246,27 +258,15 @@ public class GuiController implements Initializable {
 
                         gamePanel.requestFocus();
                         keyEvent.consume();
-                    }else if (code == KeyCode.P && !pressedKeys.contains(code)) {
-                        pauseGame(null);
-                        pressedKeys.add(code);
-                        gamePanel.requestFocus();
-                        keyEvent.consume();
                     }
                 }
 
-                // Menu controls
                 if (code == KeyCode.ESCAPE) {
                     returnToMenu();
                     keyEvent.consume();
                 }
                 if (code == KeyCode.N) {
                     newGame(null);
-                    keyEvent.consume();
-                }
-                if (code == KeyCode.P && !pressedKeys.contains(code)) {
-                    pauseGame(null);
-                    pressedKeys.add(code);
-                    gamePanel.requestFocus();
                     keyEvent.consume();
                 }
             }
@@ -442,6 +442,8 @@ public class GuiController implements Initializable {
             for (int j = 0; j < boardMatrix[i].length; j++) {
                 Rectangle rectangle = new Rectangle(BRICK_SIZE, BRICK_SIZE);
                 rectangle.setFill(Color.TRANSPARENT);
+                rectangle.setArcWidth(5);
+                rectangle.setArcHeight(5);
                 displayMatrix[i][j] = rectangle;
                 gamePanel.add(rectangle, j, i - 2);
             }
@@ -452,6 +454,8 @@ public class GuiController implements Initializable {
             for (int j = 0; j < brick.getBrickData()[i].length; j++) {
                 Rectangle rectangle = new Rectangle(BRICK_SIZE, BRICK_SIZE);
                 rectangle.setFill(getFillColor(brick.getBrickData()[i][j]));
+                rectangle.setArcWidth(5);
+                rectangle.setArcHeight(5);
                 rectangles[i][j] = rectangle;
                 brickPanel.add(rectangle, j, i);
             }
@@ -467,6 +471,8 @@ public class GuiController implements Initializable {
                 Rectangle shadow = new Rectangle(BRICK_SIZE, BRICK_SIZE);
                 shadow.setFill(getShadowColor(brick.getBrickData()[i][j]));
                 shadow.setOpacity(0.3);
+                shadow.setArcWidth(5);
+                shadow.setArcHeight(5);
                 shadowRectangles[i][j] = shadow;
                 shadowPanel.add(shadow, j, i);
             }
@@ -590,20 +596,39 @@ public class GuiController implements Initializable {
         }
     }
 
+
     private void updateShadowPosition(ViewData brick) {
-        if (shadowPanel != null && brick != null && shadowRectangles != null) {
-            shadowPanel.setLayoutX(gamePanel.getLayoutX() + brick.getxPosition() * (shadowPanel.getVgap() + BRICK_SIZE));
-            shadowPanel.setLayoutY(gamePanel.getLayoutY() + brick.getShadowYPosition() * (shadowPanel.getHgap() + BRICK_SIZE) - 46);
+        for (int i = 0; i < shadowRectangles.length; i++) {
+            for (int j = 0; j < shadowRectangles[i].length; j++) {
+                shadowRectangles[i][j].setFill(Color.TRANSPARENT);
+                gamePanel.getChildren().remove(shadowRectangles[i][j]);
+            }
+        }
 
-            int[][] currentBrickData = brick.getBrickData();
-            for (int i = 0; i < shadowRectangles.length; i++) {
-                for (int j = 0; j < shadowRectangles[i].length; j++) {
-                    if (shadowRectangles[i][j] != null) {
-                        boolean shouldBeVisible = currentBrickData[i][j] != 0;
-                        shadowRectangles[i][j].setVisible(shouldBeVisible);
+        int[][] brickData = brick.getBrickData();
+        if (shadowRectangles.length != brickData.length ||
+                shadowRectangles[0].length != brickData[0].length) {
+            shadowRectangles = new Rectangle[brickData.length][brickData[0].length];
+            for (int i = 0; i < brickData.length; i++) {
+                for (int j = 0; j < brickData[i].length; j++) {
+                    shadowRectangles[i][j] = new Rectangle(BRICK_SIZE, BRICK_SIZE);
+                    shadowRectangles[i][j].setArcWidth(5);
+                    shadowRectangles[i][j].setArcHeight(5);
+                    shadowRectangles[i][j].setOpacity(0.3);
+                }
+            }
+        }
 
-                        if (shouldBeVisible) {
-                            shadowRectangles[i][j].setFill(getShadowColor(currentBrickData[i][j]));
+        if (brick.getShadowYPosition() != brick.getyPosition()) {
+            for (int i = 0; i < brickData.length; i++) {
+                for (int j = 0; j < brickData[i].length; j++) {
+                    if (brickData[i][j] != 0) {
+                        int gridX = brick.getxPosition() + j;
+                        int gridY = brick.getShadowYPosition() + i;
+
+                        if (gridY >= 2 && gridY < 25) {
+                            shadowRectangles[i][j].setFill(getShadowColor(brickData[i][j]));
+                            gamePanel.add(shadowRectangles[i][j], gridX, gridY - 2);
                         }
                     }
                 }
@@ -649,20 +674,51 @@ public class GuiController implements Initializable {
         }
     }
 
+
     private void refreshBrick(ViewData brick) {
         if (isPause.getValue() == Boolean.FALSE) {
-            updateShadowPosition(brick);
-            positionBrickPanel(brick);
-
-            for (int i = 0; i < brick.getBrickData().length; i++) {
-                for (int j = 0; j < brick.getBrickData()[i].length; j++) {
-                    setRectangleData(brick.getBrickData()[i][j], rectangles[i][j]);
+            for (Rectangle[] row : rectangles) {
+                for (Rectangle r : row) {
+                    gamePanel.getChildren().remove(r);
                 }
             }
+
+            int[][] brickData = brick.getBrickData();
+            if (rectangles.length != brickData.length ||
+                    rectangles[0].length != brickData[0].length) {
+                rectangles = new Rectangle[brickData.length][brickData[0].length];
+                for (int i = 0; i < brickData.length; i++) {
+                    for (int j = 0; j < brickData[i].length; j++) {
+                        rectangles[i][j] = new Rectangle(BRICK_SIZE, BRICK_SIZE);
+                        rectangles[i][j].setArcWidth(5);
+                        rectangles[i][j].setArcHeight(5);
+                    }
+                }
+            }
+
+            for (int i = 0; i < brickData.length; i++) {
+                for (int j = 0; j < brickData[i].length; j++) {
+                    if (brickData[i][j] != 0) {
+                        int gridX = brick.getxPosition() + j;
+                        int gridY = brick.getyPosition() + i;
+
+                        if (gridY >= 2) {
+                            rectangles[i][j].setFill(getFillColor(brickData[i][j]));
+                            gamePanel.add(rectangles[i][j], gridX, gridY - 2);
+                        }
+                    } else {
+                        rectangles[i][j].setFill(Color.TRANSPARENT);
+                    }
+                }
+            }
+
+            updateShadowPosition(brick);
+
             if (nextBrickRectangles != null) {
                 int[][] nextBrickData = brick.getNextBrickData();
                 centerNextBrick(nextBrickData);
             }
+
             int[][] holdBrickData = brick.getHoldBrickData();
             initHoldBrickDisplay(holdBrickData);
         }
@@ -681,10 +737,15 @@ public class GuiController implements Initializable {
     }
 
     private void moveDown(MoveEvent event) {
+        if (isPause.getValue() == Boolean.TRUE || isGameOver.getValue() == Boolean.TRUE) {
+            return;
+        }
+
         if (isPause.getValue() == Boolean.FALSE) {
             DownData downData = eventListener.onDownEvent(event);
 
             if (downData.getClearRow() != null && downData.getClearRow().getLinesRemoved() > 0) {
+                soundManager.playClearRow();
                 if (gameMode == GameMode.BLITZ && blitzLevel != null) {
                     blitzLevel.addLines(downData.getClearRow().getLinesRemoved());
                 }
@@ -710,6 +771,7 @@ public class GuiController implements Initializable {
             DownData downData = eventListener.onHardDropEvent(event);
 
             if (downData.getClearRow() != null && downData.getClearRow().getLinesRemoved() > 0) {
+                soundManager.playClearRow();
                 if (gameMode == GameMode.BLITZ && blitzLevel != null) {
                     blitzLevel.addLines(downData.getClearRow().getLinesRemoved());
                 }
@@ -719,7 +781,6 @@ public class GuiController implements Initializable {
                 notificationPanel.showScore(groupNotification.getChildren());
             }
 
-            // Show board cleared notification AFTER board refresh for Zen mode
             if (downData.isBoardCleared() && gameMode == GameMode.ZEN) {
                 NotificationPanel notificationPanel = new NotificationPanel("Board Cleared!");
                 groupNotification.getChildren().add(notificationPanel);
@@ -755,6 +816,7 @@ public class GuiController implements Initializable {
             } else if (gameMode == GameMode.BLITZ && blitzTimer != null) {
                 blitzTimer.pause();
             }
+            soundManager.pauseBackgroundMusic();
             isPause.setValue(Boolean.TRUE);
 
             if (pauseGroup != null) {
@@ -767,6 +829,7 @@ public class GuiController implements Initializable {
             } else if (gameMode == GameMode.BLITZ && blitzTimer != null) {
                 blitzTimer.play();
             }
+            soundManager.resumeBackgroundMusic();
             isPause.setValue(Boolean.FALSE);
 
             if (pauseGroup != null) {
@@ -784,40 +847,66 @@ public class GuiController implements Initializable {
             blitzTimer.stop();
         }
 
+        stopAllRepeatTimers();
+
+        soundManager.stopBackgroundMusic();
         int currentScore = eventListener.getCurrentScore();
         int currentHighScore = eventListener.getCurrentHighScore();
 
         boolean showScores = (gameMode == GameMode.BLITZ);
         gameOverPanel.updateScores(currentScore, currentHighScore, showScores);
 
+        if (pauseGroup != null) {
+            pauseGroup.setVisible(false);
+        }
+
         gameOverPanel.setVisible(true);
         isGameOver.setValue(Boolean.TRUE);
+        isPause.setValue(Boolean.FALSE);
+
         brickPanel.setVisible(false);
         if (shadowPanel != null) {
             shadowPanel.setVisible(false);
         }
+
+        pressedKeys.clear();
+        spacePressed = false;
     }
 
-    public void newGame(ActionEvent actionEvent) {
-        timeLine.stop();
-        if (gameMode == GameMode.ZEN) {
-            gameTimer.reset();
-        } else if (gameMode == GameMode.BLITZ) {
-            if (blitzTimer != null) {
-                blitzTimer.stop();
-            }
-            if (blitzLevel != null) {
-                blitzLevel.reset();
-                updateProgressLabel();
-                blitzLevelLabel.setText("LEVEL 1");
-            }
-            setupBlitzTimer();
-            blitzTimer.play();
-            if (timerLabel != null) {
-                timerLabel.setText(formatTime(BLITZ_TIME_SECONDS));
-                timerLabel.setStyle("");
-            }
+    private void stopAllRepeatTimers() {
+        if (leftRepeat != null) {
+            leftRepeat.stop();
+            leftRepeat = null;
         }
+        if (rightRepeat != null) {
+            rightRepeat.stop();
+            rightRepeat = null;
+        }
+        if (downRepeat != null) {
+            downRepeat.stop();
+            downRepeat = null;
+        }
+        if (leftDelay != null) {
+            leftDelay.stop();
+            leftDelay = null;
+        }
+        if (rightDelay != null) {
+            rightDelay.stop();
+            rightDelay = null;
+        }
+        if (downDelay != null) {
+            downDelay.stop();
+            downDelay = null;
+        }
+    }
+
+
+    public void newGame(ActionEvent actionEvent) {
+        if (timeLine != null) {
+            timeLine.stop();
+        }
+        stopAllRepeatTimers();
+
         gameOverPanel.setVisible(false);
         if (pauseGroup != null) {
             pauseGroup.setVisible(false);
@@ -828,20 +917,60 @@ public class GuiController implements Initializable {
             shadowPanel.setVisible(true);
         }
 
-        eventListener.createNewGame();
-        gamePanel.requestFocus();
+        pressedKeys.clear();
+        spacePressed = false;
 
-        if (gameMode == GameMode.BLITZ) {
-            updateGameSpeed();
-        } else {
-            timeLine.play();
-        }
+        soundManager.stopBackgroundMusic();
+        soundManager.playBackgroundMusic();
 
-        if (gameMode == GameMode.ZEN) {
-            gameTimer.start();
-        }
         isPause.setValue(Boolean.FALSE);
         isGameOver.setValue(Boolean.FALSE);
+
+        if (gameMode == GameMode.ZEN) {
+            if (blitzTimer != null) {
+                blitzTimer.stop();
+                blitzTimer = null;
+            }
+
+            gameTimer.reset();
+            if (timerLabel != null) {
+                timerLabel.setText(formatTime(0));
+                timerLabel.setStyle("");
+            }
+
+            timeLine = new Timeline(new KeyFrame(
+                    Duration.millis(400),
+                    ae -> moveDown(new MoveEvent(EventType.DOWN, EventSource.THREAD))
+            ));
+            timeLine.setCycleCount(Timeline.INDEFINITE);
+            timeLine.play();
+
+            gameTimer.start();
+
+        } else if (gameMode == GameMode.BLITZ) {
+            if (gameTimer != null && gameTimer.isRunning()) {
+                gameTimer.stop();
+            }
+
+            if (blitzLevel != null) {
+                blitzLevel.reset();
+                updateProgressLabel();
+                blitzLevelLabel.setText("LEVEL 1");
+            }
+
+            setupBlitzTimer();
+            blitzTimer.play();
+
+            if (timerLabel != null) {
+                timerLabel.setText(formatTime(BLITZ_TIME_SECONDS));
+                timerLabel.setStyle("");
+            }
+
+            updateGameSpeed();
+        }
+
+        eventListener.createNewGame();
+        gamePanel.requestFocus();
 
         gameOverPanel.updateScores(0, 0, false);
     }
@@ -857,7 +986,7 @@ public class GuiController implements Initializable {
             if (blitzTimer != null) {
                 blitzTimer.stop();
             }
-
+            soundManager.stopBackgroundMusic();
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("mainMenu.fxml"));
             Parent root = loader.load();
 

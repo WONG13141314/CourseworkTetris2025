@@ -32,8 +32,13 @@ public class MainMenuController implements Initializable {
 
     private Preferences prefs;
 
+    private SoundManager soundManager;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        soundManager = SoundManager.getInstance();
+        soundManager.playBackgroundMusic();
+
         prefs = Preferences.userNodeForPackage(Score.class);
         loadHighScores();
 
@@ -101,6 +106,7 @@ public class MainMenuController implements Initializable {
 
     private void startGame(GameMode mode) {
         try {
+            soundManager.stopBackgroundMusic();
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("gameLayout.fxml"));
             Parent root = loader.load();
             GuiController guiController = loader.getController();
