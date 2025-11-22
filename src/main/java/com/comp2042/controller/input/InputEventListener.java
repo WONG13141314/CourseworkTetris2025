@@ -1,4 +1,4 @@
-package com.comp2042.controller;
+package com.comp2042.controller.input;
 
 import com.comp2042.model.data.DownData;
 import com.comp2042.model.data.MoveEvent;

@@ -1,4 +1,4 @@
-package com.comp2042.model;
+package com.comp2042.model.scoring;
 
 import com.comp2042.enums.GameMode;
 import javafx.beans.property.IntegerProperty;

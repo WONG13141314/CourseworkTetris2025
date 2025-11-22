@@ -1,9 +1,10 @@
 package com.comp2042.controller;
 
+import com.comp2042.controller.input.InputEventListener;
 import com.comp2042.enums.EventSource;
 import com.comp2042.enums.GameMode;
-import com.comp2042.model.Board;
-import com.comp2042.model.SimpleBoard;
+import com.comp2042.model.game.Board;
+import com.comp2042.model.game.SimpleBoard;
 import com.comp2042.model.data.ClearRow;
 import com.comp2042.model.data.DownData;
 import com.comp2042.model.data.MoveEvent;
@@ -22,8 +23,8 @@ public class GameController implements InputEventListener {
         this.board = new SimpleBoard(25, 10, gameMode);
 
         board.createNewBrick();
-        viewGuiController.setEventListener(this);
         viewGuiController.setGameMode(gameMode);
+        viewGuiController.setEventListener(this);
         viewGuiController.initGameView(board.getBoardMatrix(), board.getViewData());
         viewGuiController.bindScore(board.getScore().scoreProperty());
         viewGuiController.bindHighScore(board.getScore().highScoreProperty());

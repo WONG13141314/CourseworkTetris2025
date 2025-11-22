@@ -1,4 +1,4 @@
-package com.comp2042.model;
+package com.comp2042.model.game;
 
 import com.comp2042.model.data.NextShapeInfo;
 import com.comp2042.logic.bricks.Brick;

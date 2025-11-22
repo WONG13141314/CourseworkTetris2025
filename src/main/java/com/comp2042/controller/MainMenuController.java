@@ -1,7 +1,7 @@
 package com.comp2042.controller;
 
 import com.comp2042.enums.GameMode;
-import com.comp2042.model.Score;
+import com.comp2042.model.scoring.Score;
 import com.comp2042.util.SoundManager;
 import com.comp2042.view.GuiController;
 import javafx.animation.ScaleTransition;

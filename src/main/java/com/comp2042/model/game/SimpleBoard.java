@@ -1,9 +1,10 @@
-package com.comp2042.model;
+package com.comp2042.model.game;
 
 import com.comp2042.enums.GameMode;
 import com.comp2042.logic.bricks.Brick;
 import com.comp2042.logic.bricks.BrickGenerator;
 import com.comp2042.logic.bricks.RandomBrickGenerator;
+import com.comp2042.model.scoring.Score;
 import com.comp2042.model.data.ClearRow;
 import com.comp2042.model.data.NextShapeInfo;
 import com.comp2042.model.data.ViewData;
