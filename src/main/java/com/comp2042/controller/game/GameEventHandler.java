@@ -1,5 +1,6 @@
-package com.comp2042.controller;
+package com.comp2042.controller.game;
 
+import com.comp2042.controller.mode.BlitzModeManager;
 import com.comp2042.controller.input.InputEventListener;
 import com.comp2042.enums.EventType;
 import com.comp2042.enums.GameMode;

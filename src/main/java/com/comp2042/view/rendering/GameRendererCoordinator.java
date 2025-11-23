@@ -1,10 +1,6 @@
-package com.comp2042.view;
+package com.comp2042.view.rendering;
 
 import com.comp2042.model.data.ViewData;
-import com.comp2042.view.rendering.BoardRenderer;
-import com.comp2042.view.rendering.BrickRenderer;
-import com.comp2042.view.rendering.PreviewRenderer;
-import com.comp2042.view.rendering.ShadowRenderer;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 

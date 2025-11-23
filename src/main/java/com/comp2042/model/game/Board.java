@@ -4,6 +4,7 @@ import com.comp2042.model.scoring.Score;
 import com.comp2042.model.data.ClearRow;
 import com.comp2042.model.data.ViewData;
 
+// Interface for game board operations
 public interface Board {
 
     boolean moveBrickDown();

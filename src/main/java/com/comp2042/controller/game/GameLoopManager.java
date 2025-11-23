@@ -1,9 +1,7 @@
-package com.comp2042.controller;
+package com.comp2042.controller.game;
 
-import com.comp2042.enums.EventSource;
-import com.comp2042.enums.EventType;
+import com.comp2042.controller.mode.BlitzModeManager;
 import com.comp2042.enums.GameMode;
-import com.comp2042.model.data.MoveEvent;
 import com.comp2042.util.GameConstants;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;

@@ -1,6 +1,6 @@
-package com.comp2042.controller;
+package com.comp2042.controller.mode;
 
-import com.comp2042.model.game.BlitzLevel;
+import com.comp2042.model.mode.BlitzLevel;
 import javafx.scene.control.Label;
 
 /**

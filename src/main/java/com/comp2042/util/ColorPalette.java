@@ -28,11 +28,7 @@ public class ColorPalette {
     private static final Paint SHADOW_BEIGE = Color.rgb(245, 245, 220, 0.6);
     private static final Paint SHADOW_BROWN = Color.rgb(222, 184, 135, 0.6);
 
-    /**
-     * Get the fill color for a brick type
-     * @param brickType The brick type (0-7)
-     * @return Paint color for the brick
-     */
+    // Get the fill color for a brick type
     public static Paint getBrickColor(int brickType) {
         switch (brickType) {
             case 0: return TRANSPARENT;
@@ -47,11 +43,7 @@ public class ColorPalette {
         }
     }
 
-    /**
-     * Get the shadow color for a brick type
-     * @param brickType The brick type (1-7)
-     * @return Paint color for the shadow
-     */
+    // Get the shadow color for a brick type
     public static Paint getShadowColor(int brickType) {
         switch (brickType) {
             case 1: return SHADOW_CYAN;

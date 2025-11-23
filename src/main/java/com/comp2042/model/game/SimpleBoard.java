@@ -18,132 +18,99 @@ public class SimpleBoard implements Board {
     private final int height;
     private final BrickGenerator brickGenerator;
     private final BrickRotator brickRotator;
-    private int[][] currentGameMatrix;
-    private Point currentOffset;
+    private final HoldBrickManager holdBrickManager;
     private final Score score;
     private final GameMode gameMode;
-    private Brick holdBrick;
-    private boolean canHold = true;
-    private boolean hasHoldBrick = false;
+
+    private int[][] currentGameMatrix;
+    private Point currentOffset;
     private boolean boardCleared = false;
 
     public SimpleBoard(int width, int height, GameMode gameMode) {
         this.width = width;
         this.height = height;
         this.gameMode = gameMode;
-        currentGameMatrix = new int[width][height];
-        brickGenerator = new RandomBrickGenerator();
-        brickRotator = new BrickRotator();
-        score = new Score(gameMode);
+        this.currentGameMatrix = new int[width][height];
+        this.brickGenerator = new RandomBrickGenerator();
+        this.brickRotator = new BrickRotator();
+        this.holdBrickManager = new HoldBrickManager();
+        this.score = new Score(gameMode);
     }
 
     @Override
     public boolean moveBrickDown() {
-        int[][] currentMatrix = MatrixOperations.copy(currentGameMatrix);
-        Point p = new Point(currentOffset);
-        p.translate(0, 1);
-        boolean conflict = MatrixOperations.intersect(currentMatrix, brickRotator.getCurrentShape(), (int) p.getX(), (int) p.getY());
-        if (conflict) {
-            return false;
-        } else {
-            currentOffset = p;
+        CollisionDetector detector = new CollisionDetector(currentGameMatrix);
+
+        if (detector.canMoveDown(brickRotator.getCurrentShape(), currentOffset)) {
+            currentOffset.translate(0, 1);
             return true;
         }
+        return false;
     }
 
     @Override
     public boolean moveBrickLeft() {
-        int[][] currentMatrix = MatrixOperations.copy(currentGameMatrix);
-        Point p = new Point(currentOffset);
-        p.translate(-1, 0);
-        boolean conflict = MatrixOperations.intersect(currentMatrix, brickRotator.getCurrentShape(), (int) p.getX(), (int) p.getY());
-        if (conflict) {
-            return false;
-        } else {
-            currentOffset = p;
+        CollisionDetector detector = new CollisionDetector(currentGameMatrix);
+
+        if (detector.canMoveLeft(brickRotator.getCurrentShape(), currentOffset)) {
+            currentOffset.translate(-1, 0);
             return true;
         }
+        return false;
     }
 
     @Override
     public boolean moveBrickRight() {
-        int[][] currentMatrix = MatrixOperations.copy(currentGameMatrix);
-        Point p = new Point(currentOffset);
-        p.translate(1, 0);
-        boolean conflict = MatrixOperations.intersect(currentMatrix, brickRotator.getCurrentShape(), (int) p.getX(), (int) p.getY());
-        if (conflict) {
-            return false;
-        } else {
-            currentOffset = p;
+        CollisionDetector detector = new CollisionDetector(currentGameMatrix);
+
+        if (detector.canMoveRight(brickRotator.getCurrentShape(), currentOffset)) {
+            currentOffset.translate(1, 0);
             return true;
         }
+        return false;
     }
 
     @Override
     public boolean rotateLeftBrick() {
-        int[][] currentMatrix = MatrixOperations.copy(currentGameMatrix);
+        CollisionDetector detector = new CollisionDetector(currentGameMatrix);
         NextShapeInfo nextShape = brickRotator.getNextShape();
 
-        boolean conflict = MatrixOperations.intersect(currentMatrix, nextShape.getShape(),
-                (int) currentOffset.getX(), (int) currentOffset.getY());
-        if (!conflict) {
+        Point validPosition = detector.findValidRotationPosition(
+                nextShape.getShape(), currentOffset);
+
+        if (validPosition != null) {
+            currentOffset = validPosition;
             brickRotator.setCurrentShape(nextShape.getPosition());
             return true;
         }
-
-        boolean conflictLeft = MatrixOperations.intersect(currentMatrix, nextShape.getShape(),
-                (int) currentOffset.getX() - 1, (int) currentOffset.getY());
-        if (!conflictLeft) {
-            currentOffset.translate(-1, 0);
-            brickRotator.setCurrentShape(nextShape.getPosition());
-            return true;
-        }
-
-        boolean conflictRight = MatrixOperations.intersect(currentMatrix, nextShape.getShape(),
-                (int) currentOffset.getX() + 1, (int) currentOffset.getY());
-        if (!conflictRight) {
-            currentOffset.translate(1, 0);
-            brickRotator.setCurrentShape(nextShape.getPosition());
-            return true;
-        }
-
         return false;
     }
 
     @Override
     public int calculateShadowPosition() {
-        int[][] currentMatrix = MatrixOperations.copy(currentGameMatrix);
-        int shadowY = (int) currentOffset.getY();
-
-        while (true) {
-            shadowY++;
-            boolean conflict = MatrixOperations.intersect(currentMatrix, brickRotator.getCurrentShape(),
-                    (int) currentOffset.getX(), shadowY);
-            if (conflict) {
-                shadowY--;
-                break;
-            }
-        }
-        return shadowY;
+        CollisionDetector detector = new CollisionDetector(currentGameMatrix);
+        return detector.calculateShadowY(brickRotator.getCurrentShape(), currentOffset);
     }
 
+    @Override
     public boolean createNewBrick() {
         boardCleared = false;
         Brick currentBrick = brickGenerator.getBrick();
         brickRotator.setBrick(currentBrick);
         currentOffset = new Point(3, 0);
-        canHold = true;
+        holdBrickManager.enableHold();
 
-        boolean gameOver = MatrixOperations.intersect(currentGameMatrix, brickRotator.getCurrentShape(),
+        CollisionDetector detector = new CollisionDetector(currentGameMatrix);
+        boolean gameOver = detector.wouldCollide(brickRotator.getCurrentShape(),
                 (int) currentOffset.getX(), (int) currentOffset.getY());
 
-        if (gameOver) {
-            if (gameMode == GameMode.ZEN) {
-                clearEntireBoard();
-                boardCleared = true;
-                gameOver = MatrixOperations.intersect(currentGameMatrix, brickRotator.getCurrentShape(),
-                        (int) currentOffset.getX(), (int) currentOffset.getY());
-            }
+        if (gameOver && gameMode == GameMode.ZEN) {
+            clearEntireBoard();
+            boardCleared = true;
+
+            detector = new CollisionDetector(currentGameMatrix);
+            gameOver = detector.wouldCollide(brickRotator.getCurrentShape(),
+                    (int) currentOffset.getX(), (int) currentOffset.getY());
         }
 
         return gameOver;
@@ -161,16 +128,24 @@ public class SimpleBoard implements Board {
     @Override
     public ViewData getViewData() {
         int shadowY = calculateShadowPosition();
-        return new ViewData(brickRotator.getCurrentShape(),
-                (int) currentOffset.getX(), (int) currentOffset.getY(),
+        return new ViewData(
+                brickRotator.getCurrentShape(),
+                (int) currentOffset.getX(),
+                (int) currentOffset.getY(),
                 brickGenerator.getNextBrick().getShapeMatrix().get(0),
                 shadowY,
-                getHoldBrickData());
+                holdBrickManager.getHoldBrickData()
+        );
     }
 
     @Override
     public void mergeBrickToBackground() {
-        currentGameMatrix = MatrixOperations.merge(currentGameMatrix, brickRotator.getCurrentShape(), (int) currentOffset.getX(), (int) currentOffset.getY());
+        currentGameMatrix = MatrixOperations.merge(
+                currentGameMatrix,
+                brickRotator.getCurrentShape(),
+                (int) currentOffset.getX(),
+                (int) currentOffset.getY()
+        );
     }
 
     @Override
@@ -187,69 +162,60 @@ public class SimpleBoard implements Board {
 
     @Override
     public boolean holdBrick() {
-        if (!canHold) {
+        if (!holdBrickManager.canHold()) {
             return false;
         }
 
         Brick currentBrick = brickRotator.getCurrentBrick();
 
-        if (!hasHoldBrick) {
-            holdBrick = currentBrick;
+        if (!holdBrickManager.hasHoldBrick()) {
+            holdBrickManager.setHoldBrick(currentBrick);
             Brick nextBrick = brickGenerator.getBrick();
             brickRotator.setBrick(nextBrick);
             currentOffset = new Point(3, 0);
-            hasHoldBrick = true;
         } else {
-            Brick temp = holdBrick;
-            holdBrick = currentBrick;
-            brickRotator.setBrick(temp);
+            Brick heldBrick = holdBrickManager.getHoldBrick();
+            holdBrickManager.setHoldBrick(currentBrick);
+            brickRotator.setBrick(heldBrick);
 
+            CollisionDetector detector = new CollisionDetector(currentGameMatrix);
             int[][] currentShape = brickRotator.getCurrentShape();
-            boolean conflict = MatrixOperations.intersect(currentGameMatrix, currentShape,
-                    (int) currentOffset.getX(), (int) currentOffset.getY());
 
-            if (conflict) {
+            if (detector.wouldCollide(currentShape, (int) currentOffset.getX(), (int) currentOffset.getY())) {
                 int newY = (int) currentOffset.getY();
-                while (newY > 0 && MatrixOperations.intersect(currentGameMatrix, currentShape,
-                        (int) currentOffset.getX(), newY)) {
+                while (newY > 0 && detector.wouldCollide(currentShape, (int) currentOffset.getX(), newY)) {
                     newY--;
                 }
 
-                if (newY >= 0 && !MatrixOperations.intersect(currentGameMatrix, currentShape,
-                        (int) currentOffset.getX(), newY)) {
+                if (newY >= 0 && !detector.wouldCollide(currentShape, (int) currentOffset.getX(), newY)) {
                     currentOffset = new Point((int) currentOffset.getX(), newY);
                 } else {
-                    holdBrick = currentBrick;
-                    brickRotator.setBrick(temp);
+                    holdBrickManager.setHoldBrick(heldBrick);
+                    brickRotator.setBrick(currentBrick);
                     return false;
                 }
             }
         }
 
-        canHold = false;
+        holdBrickManager.disableHold();
         return true;
     }
 
     @Override
     public int[][] getHoldBrickData() {
-        if (holdBrick != null) {
-            return holdBrick.getShapeMatrix().get(0);
-        }
-        return new int[0][0];
+        return holdBrickManager.getHoldBrickData();
     }
 
     @Override
     public boolean canHold() {
-        return canHold;
+        return holdBrickManager.canHold();
     }
 
     @Override
     public void newGame() {
         currentGameMatrix = new int[width][height];
         score.reset();
-        holdBrick = null;
-        hasHoldBrick = false;
-        canHold = true;
+        holdBrickManager.reset();
         boardCleared = false;
         brickGenerator.reset();
         createNewBrick();

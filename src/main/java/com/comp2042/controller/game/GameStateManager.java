@@ -1,4 +1,4 @@
-package com.comp2042.controller;
+package com.comp2042.controller.game;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;

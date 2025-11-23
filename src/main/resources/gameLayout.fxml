@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
 <?import java.net.URL?>
-<Pane fx:controller="com.comp2042.view.GuiController"
+<Pane fx:controller="com.comp2042.view.game.GuiController"
       xmlns:fx="http://javafx.com/fxml" styleClass="tetrisjfx-root" prefWidth="540" prefHeight="720">
 
     <!-- Main Game Container -->

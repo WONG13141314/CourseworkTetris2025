@@ -8,14 +8,15 @@ import java.util.Deque;
 import java.util.List;
 import java.util.stream.Collectors;
 
+// Utility class for matrix operations on game board
 public class MatrixOperations {
 
-
-    //We don't want to instantiate this utility class
+    // Prevent instantiation
     private MatrixOperations(){
 
     }
 
+    // Check if brick intersects with board at given position
     public static boolean intersect(final int[][] matrix, final int[][] brick, int x, int y) {
         for (int i = 0; i < brick.length; i++) {
             for (int j = 0; j < brick[i].length; j++) {
@@ -29,6 +30,7 @@ public class MatrixOperations {
         return false;
     }
 
+    // Check if position is out of board bounds
     private static boolean checkOutOfBound(int[][] matrix, int targetX, int targetY) {
         boolean returnValue = true;
         if (targetX >= 0 && targetY < matrix.length && targetX < matrix[targetY].length) {
@@ -37,6 +39,7 @@ public class MatrixOperations {
         return returnValue;
     }
 
+    // Create deep copy of matrix
     public static int[][] copy(int[][] original) {
         int[][] myInt = new int[original.length][];
         for (int i = 0; i < original.length; i++) {
@@ -48,6 +51,7 @@ public class MatrixOperations {
         return myInt;
     }
 
+    // Merge brick into board at given position
     public static int[][] merge(int[][] filledFields, int[][] brick, int x, int y) {
         int[][] copy = copy(filledFields);
         for (int i = 0; i < brick.length; i++) {
@@ -62,6 +66,7 @@ public class MatrixOperations {
         return copy;
     }
 
+    // Check and remove completed rows, return new matrix and score
     public static ClearRow checkRemoving(final int[][] matrix) {
         int[][] tmp = new int[matrix.length][matrix[0].length];
         Deque<int[]> newRows = new ArrayDeque<>();
@@ -94,8 +99,8 @@ public class MatrixOperations {
         return new ClearRow(clearedRows.size(), tmp, scoreBonus);
     }
 
+    // Create deep copy of list of matrices
     public static List<int[][]> deepCopyList(List<int[][]> list){
         return list.stream().map(MatrixOperations::copy).collect(Collectors.toList());
     }
-
 }

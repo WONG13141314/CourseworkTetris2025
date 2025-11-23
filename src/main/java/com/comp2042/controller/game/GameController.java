@@ -1,4 +1,4 @@
-package com.comp2042.controller;
+package com.comp2042.controller.game;
 
 import com.comp2042.controller.input.InputEventListener;
 import com.comp2042.enums.EventSource;
@@ -9,7 +9,7 @@ import com.comp2042.model.data.ClearRow;
 import com.comp2042.model.data.DownData;
 import com.comp2042.model.data.MoveEvent;
 import com.comp2042.model.data.ViewData;
-import com.comp2042.view.GuiController;
+import com.comp2042.view.game.GuiController;
 
 public class GameController implements InputEventListener {
 

@@ -1,9 +1,10 @@
-package com.comp2042.controller;
+package com.comp2042.controller.menu;
 
+import com.comp2042.controller.game.GameController;
 import com.comp2042.enums.GameMode;
 import com.comp2042.model.scoring.Score;
 import com.comp2042.util.SoundManager;
-import com.comp2042.view.GuiController;
+import com.comp2042.view.game.GuiController;
 import javafx.animation.ScaleTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;

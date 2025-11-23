@@ -1,4 +1,4 @@
-package com.comp2042.view;
+package com.comp2042.view.game;
 
 import com.comp2042.enums.GameMode;
 import com.comp2042.view.components.GameOverPanel;

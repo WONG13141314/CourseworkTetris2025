@@ -3,6 +3,7 @@ package com.comp2042.model.game;
 import com.comp2042.model.data.NextShapeInfo;
 import com.comp2042.logic.bricks.Brick;
 
+// Manages brick rotation states
 public class BrickRotator {
 
     private Brick brick;
@@ -30,6 +31,4 @@ public class BrickRotator {
         this.brick = brick;
         currentShape = 0;
     }
-
-
 }

@@ -1,4 +1,4 @@
-package com.comp2042.model.game;
+package com.comp2042.model.mode;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
