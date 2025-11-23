@@ -5,6 +5,7 @@ import com.comp2042.controller.game.GameLoopManager;
 import com.comp2042.controller.game.GameStateManager;
 import com.comp2042.controller.input.InputHandler;
 import com.comp2042.controller.mode.BlitzModeManager;
+import com.comp2042.controller.mode.ZenModeManager;
 import com.comp2042.enums.GameMode;
 import com.comp2042.util.SoundManager;
 import com.comp2042.util.TimerManager;
@@ -27,6 +28,7 @@ public class GameLifecycleManager {
     private GameRendererCoordinator rendererCoordinator;
     private GameEventHandler eventHandler;
     private BlitzModeManager blitzModeManager;
+    private ZenModeManager zenModeManager;
 
     public GameLifecycleManager(GameMode gameMode, GameStateManager stateManager,
                                 InputHandler inputHandler, UIManager uiManager,
@@ -40,12 +42,14 @@ public class GameLifecycleManager {
 
     public void setComponents(GameLoopManager loopManager, TimerManager timerManager,
                               GameRendererCoordinator rendererCoordinator,
-                              GameEventHandler eventHandler, BlitzModeManager blitzModeManager) {
+                              GameEventHandler eventHandler, BlitzModeManager blitzModeManager,
+                              ZenModeManager zenModeManager) {
         this.loopManager = loopManager;
         this.timerManager = timerManager;
         this.rendererCoordinator = rendererCoordinator;
         this.eventHandler = eventHandler;
         this.blitzModeManager = blitzModeManager;
+        this.zenModeManager = zenModeManager;
     }
 
     /**
@@ -89,6 +93,7 @@ public class GameLifecycleManager {
         timerManager.stop();
         inputHandler.stopAllTimers();
         soundManager.stopBackgroundMusic();
+        soundManager.playGameOverMusic();
 
         uiManager.showGameOver(
                 eventHandler.getCurrentScore(),
@@ -112,6 +117,7 @@ public class GameLifecycleManager {
         rendererCoordinator.setVisible(true);
         inputHandler.reset();
 
+        soundManager.stopGameOverMusic();
         soundManager.stopBackgroundMusic();
         soundManager.playBackgroundMusic();
 
@@ -119,6 +125,10 @@ public class GameLifecycleManager {
 
         if (blitzModeManager != null) {
             blitzModeManager.reset();
+        }
+
+        if (zenModeManager != null) {
+            zenModeManager.reset();
         }
 
         timerManager.reset();

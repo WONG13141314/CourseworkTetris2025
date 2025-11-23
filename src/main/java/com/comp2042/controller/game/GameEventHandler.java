@@ -1,6 +1,7 @@
 package com.comp2042.controller.game;
 
 import com.comp2042.controller.mode.BlitzModeManager;
+import com.comp2042.controller.mode.ZenModeManager;
 import com.comp2042.controller.input.InputEventListener;
 import com.comp2042.enums.EventType;
 import com.comp2042.enums.GameMode;
@@ -18,6 +19,7 @@ public class GameEventHandler {
     private final SoundManager soundManager;
     private final GameMode gameMode;
     private BlitzModeManager blitzModeManager;
+    private ZenModeManager zenModeManager;
     private NotificationCallback onNotification;
 
     public interface NotificationCallback {
@@ -32,6 +34,10 @@ public class GameEventHandler {
 
     public void setBlitzModeManager(BlitzModeManager manager) {
         this.blitzModeManager = manager;
+    }
+
+    public void setZenModeManager(ZenModeManager manager) {
+        this.zenModeManager = manager;
     }
 
     public void setOnNotification(NotificationCallback callback) {
@@ -84,7 +90,8 @@ public class GameEventHandler {
         }
 
         // Handle board cleared achievement (Zen mode)
-        if (downData.isBoardCleared() && gameMode == GameMode.ZEN) {
+        if (downData.isBoardCleared() && gameMode == GameMode.ZEN && zenModeManager != null) {
+            zenModeManager.notifyBoardCleared();
             if (onNotification != null) {
                 onNotification.showNotification("Board Cleared!");
             }

@@ -11,13 +11,16 @@ public class SoundManager {
     private static SoundManager instance;
     private ExecutorService soundExecutor;
     private Clip backgroundMusic;
+    private Clip gameOverMusic;
     private boolean isMusicPlaying = false;
+    private boolean isGameOverMusicPlaying = false;
 
     private static final float BACKGROUND_MUSIC_VOLUME = 0.8f;
     private static final float CLEAR_ROW_VOLUME = 0.9f;
+    private static final float GAME_OVER_VOLUME = 0.8f;
 
     private SoundManager() {
-        soundExecutor = Executors.newFixedThreadPool(2, new ThreadFactory() {
+        soundExecutor = Executors.newFixedThreadPool(3, new ThreadFactory() {
             @Override
             public Thread newThread(Runnable r) {
                 Thread thread = new Thread(r);
@@ -42,7 +45,10 @@ public class SoundManager {
                 stopBackgroundMusic();
 
                 InputStream audioSrc = getClass().getClassLoader().getResourceAsStream("sounds/background_music.wav");
-                if (audioSrc == null) return;
+                if (audioSrc == null) {
+                    System.err.println("Background music file not found!");
+                    return;
+                }
 
                 InputStream bufferedIn = new BufferedInputStream(audioSrc);
                 AudioInputStream audioStream = AudioSystem.getAudioInputStream(bufferedIn);
@@ -69,6 +75,7 @@ public class SoundManager {
 
             } catch (Exception e) {
                 System.err.println("Error playing background music: " + e.getMessage());
+                e.printStackTrace();
             }
         });
     }
@@ -77,7 +84,10 @@ public class SoundManager {
         soundExecutor.submit(() -> {
             try {
                 InputStream audioSrc = getClass().getClassLoader().getResourceAsStream("sounds/clear_row.wav");
-                if (audioSrc == null) return;
+                if (audioSrc == null) {
+                    System.err.println("Clear row sound file not found!");
+                    return;
+                }
 
                 InputStream bufferedIn = new BufferedInputStream(audioSrc);
                 AudioInputStream audioStream = AudioSystem.getAudioInputStream(bufferedIn);
@@ -96,8 +106,63 @@ public class SoundManager {
 
             } catch (Exception e) {
                 System.err.println("Error playing clear row sound: " + e.getMessage());
+                e.printStackTrace();
             }
         });
+    }
+
+    public void playGameOverMusic() {
+        if (isGameOverMusicPlaying) return;
+
+        soundExecutor.submit(() -> {
+            try {
+                stopGameOverMusic();
+
+                InputStream audioSrc = getClass().getClassLoader().getResourceAsStream("sounds/game_over.wav");
+                if (audioSrc == null) {
+                    System.err.println("Game over music file not found! Looking for: sounds/game_over.wav");
+                    return;
+                }
+
+                InputStream bufferedIn = new BufferedInputStream(audioSrc);
+                AudioInputStream audioStream = AudioSystem.getAudioInputStream(bufferedIn);
+
+                gameOverMusic = AudioSystem.getClip();
+                gameOverMusic.open(audioStream);
+
+                if (gameOverMusic.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
+                    FloatControl gainControl = (FloatControl) gameOverMusic.getControl(FloatControl.Type.MASTER_GAIN);
+                    float range = gainControl.getMaximum() - gainControl.getMinimum();
+                    float gain = (range * GAME_OVER_VOLUME) + gainControl.getMinimum();
+                    gainControl.setValue(gain);
+                }
+
+                gameOverMusic.addLineListener(event -> {
+                    if (event.getType() == LineEvent.Type.STOP) {
+                        isGameOverMusicPlaying = false;
+                    }
+                });
+
+                gameOverMusic.loop(Clip.LOOP_CONTINUOUSLY);
+                gameOverMusic.start();
+                isGameOverMusicPlaying = true;
+
+                System.out.println("Game over music started playing");
+
+            } catch (Exception e) {
+                System.err.println("Error playing game over music: " + e.getMessage());
+                e.printStackTrace();
+            }
+        });
+    }
+
+    public void stopGameOverMusic() {
+        if (gameOverMusic != null) {
+            gameOverMusic.stop();
+            gameOverMusic.close();
+            gameOverMusic = null;
+        }
+        isGameOverMusicPlaying = false;
     }
 
     public void stopBackgroundMusic() {

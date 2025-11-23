@@ -23,6 +23,7 @@ public class MenuNavigator {
     public void returnToMainMenu(Stage stage) {
         try {
             soundManager.stopBackgroundMusic();
+            soundManager.stopGameOverMusic(); // Stop game over music when returning to menu
 
             FXMLLoader loader = new FXMLLoader(
                     getClass().getClassLoader().getResource("mainMenu.fxml")

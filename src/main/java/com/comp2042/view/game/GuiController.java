@@ -98,7 +98,7 @@ public class GuiController implements Initializable {
         lifecycleManager = new GameLifecycleManager(mode, stateManager, inputHandler,
                 uiManager, soundManager);
 
-        gameInitializer.initializeGameMode(blitzLevelLabel, blitzProgressLabel);
+        gameInitializer.initializeGameMode(blitzLevelLabel, blitzProgressLabel, timerLabel);
     }
 
     public void initGameView(int[][] boardMatrix, com.comp2042.model.data.ViewData brick) {
@@ -123,7 +123,8 @@ public class GuiController implements Initializable {
                 gameInitializer.getTimerManager(),
                 gameInitializer.getRendererCoordinator(),
                 gameInitializer.getEventHandler(),
-                gameInitializer.getBlitzModeManager()
+                gameInitializer.getBlitzModeManager(),
+                gameInitializer.getZenModeManager()
         );
 
         inputCoordinator.setComponents(

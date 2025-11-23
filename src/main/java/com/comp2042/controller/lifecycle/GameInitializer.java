@@ -6,6 +6,7 @@ import com.comp2042.controller.game.GameStateManager;
 import com.comp2042.controller.input.InputEventListener;
 import com.comp2042.controller.input.InputHandler;
 import com.comp2042.controller.mode.BlitzModeManager;
+import com.comp2042.controller.mode.ZenModeManager;
 import com.comp2042.enums.GameMode;
 import com.comp2042.util.SoundManager;
 import com.comp2042.util.TimerManager;
@@ -32,6 +33,7 @@ public class GameInitializer {
     private GameEventHandler eventHandler;
     private GameLoopManager loopManager;
     private BlitzModeManager blitzModeManager;
+    private ZenModeManager zenModeManager;
 
     public GameInitializer(GameMode gameMode, GameStateManager stateManager,
                            InputHandler inputHandler, UIManager uiManager,
@@ -46,11 +48,13 @@ public class GameInitializer {
     /**
      * Initialize game mode specific components
      */
-    public void initializeGameMode(Label blitzLevelLabel, Label blitzProgressLabel) {
+    public void initializeGameMode(Label blitzLevelLabel, Label blitzProgressLabel, Label timerLabel) {
         uiManager.setupGameMode(gameMode);
 
         if (gameMode == GameMode.BLITZ) {
             blitzModeManager = new BlitzModeManager(blitzLevelLabel, blitzProgressLabel);
+        } else if (gameMode == GameMode.ZEN) {
+            zenModeManager = new ZenModeManager(timerLabel);
         }
     }
 
@@ -96,6 +100,7 @@ public class GameInitializer {
     public void initializeEventHandler(InputEventListener listener) {
         eventHandler = new GameEventHandler(listener, gameMode);
         eventHandler.setBlitzModeManager(blitzModeManager);
+        eventHandler.setZenModeManager(zenModeManager);
         eventHandler.setOnNotification(text -> uiManager.showNotification(text));
     }
 
@@ -105,4 +110,5 @@ public class GameInitializer {
     public GameEventHandler getEventHandler() { return eventHandler; }
     public GameLoopManager getLoopManager() { return loopManager; }
     public BlitzModeManager getBlitzModeManager() { return blitzModeManager; }
+    public ZenModeManager getZenModeManager() { return zenModeManager; }
 }

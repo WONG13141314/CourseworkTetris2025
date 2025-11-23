@@ -104,6 +104,7 @@ public class SimpleBoard implements Board {
         boolean gameOver = detector.wouldCollide(brickRotator.getCurrentShape(),
                 (int) currentOffset.getX(), (int) currentOffset.getY());
 
+        // Zen mode : clear board on game over instead of ending game
         if (gameOver && gameMode == GameMode.ZEN) {
             clearEntireBoard();
             boardCleared = true;
