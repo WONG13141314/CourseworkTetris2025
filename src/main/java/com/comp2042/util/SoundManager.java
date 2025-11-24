@@ -147,8 +147,6 @@ public class SoundManager {
                 gameOverMusic.start();
                 isGameOverMusicPlaying = true;
 
-                System.out.println("Game over music started playing");
-
             } catch (Exception e) {
                 System.err.println("Error playing game over music: " + e.getMessage());
                 e.printStackTrace();

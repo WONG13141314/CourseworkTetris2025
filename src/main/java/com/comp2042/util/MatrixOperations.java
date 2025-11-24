@@ -32,11 +32,9 @@ public class MatrixOperations {
 
     // Check if position is out of board bounds
     private static boolean checkOutOfBound(int[][] matrix, int targetX, int targetY) {
-        boolean returnValue = true;
-        if (targetX >= 0 && targetY < matrix.length && targetX < matrix[targetY].length) {
-            returnValue = false;
-        }
-        return returnValue;
+        return targetX < 0 || targetY < 0 ||
+                targetY >= matrix.length ||
+                targetX >= matrix[targetY].length;
     }
 
     // Create deep copy of matrix
