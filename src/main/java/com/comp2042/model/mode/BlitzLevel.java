@@ -17,6 +17,10 @@ public class BlitzLevel {
     }
 
     public void addLines(int lines) {
+        if (lines < 0) {
+            return;
+        }
+
         int currentLines = linesCleared.get() + lines;
         linesCleared.set(currentLines);
 

@@ -19,7 +19,7 @@ public class SoundManager {
     private static final float CLEAR_ROW_VOLUME = 0.9f;
     private static final float GAME_OVER_VOLUME = 0.8f;
 
-    private SoundManager() {
+    public SoundManager() {
         soundExecutor = Executors.newFixedThreadPool(3, new ThreadFactory() {
             @Override
             public Thread newThread(Runnable r) {

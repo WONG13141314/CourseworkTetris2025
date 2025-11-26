@@ -12,6 +12,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -46,8 +47,27 @@ public class MainMenuController implements Initializable {
         prefs = Preferences.userNodeForPackage(Score.class);
         loadHighScores();
 
+        setInitialStyles();
         setupHoverEffects();
         setupClickHandlers();
+    }
+
+    private void setInitialStyles() {
+        // Set zen mode initial border
+        zenModePanel.setStyle(
+                "-fx-border-color: rgba(122, 162, 247, 0.3); " +
+                        "-fx-border-width: 2px; " +
+                        "-fx-border-radius: 12px; " +
+                        "-fx-background-radius: 12px;"
+        );
+
+        // Set blitz mode initial border
+        blitzModePanel.setStyle(
+                "-fx-border-color: rgba(247, 118, 142, 0.3); " +
+                        "-fx-border-width: 2px; " +
+                        "-fx-border-radius: 12px; " +
+                        "-fx-background-radius: 12px;"
+        );
     }
 
     private void loadHighScores() {
@@ -72,7 +92,13 @@ public class MainMenuController implements Initializable {
         });
 
         zenModePanel.setOnMouseExited(e -> {
-            zenModePanel.setStyle("");
+            // Keep default border visible when not hovering
+            zenModePanel.setStyle(
+                    "-fx-border-color: rgba(122, 162, 247, 0.3); " +
+                            "-fx-border-width: 2px; " +
+                            "-fx-border-radius: 12px; " +
+                            "-fx-background-radius: 12px;"
+            );
             animateScale(zenModePanel, 1.05, 1.0);
         });
 
@@ -89,7 +115,13 @@ public class MainMenuController implements Initializable {
         });
 
         blitzModePanel.setOnMouseExited(e -> {
-            blitzModePanel.setStyle("");
+            // Keep default border visible when not hovering
+            blitzModePanel.setStyle(
+                    "-fx-border-color: rgba(247, 118, 142, 0.3); " +
+                            "-fx-border-width: 2px; " +
+                            "-fx-border-radius: 12px; " +
+                            "-fx-background-radius: 12px;"
+            );
             animateScale(blitzModePanel, 1.05, 1.0);
         });
     }
@@ -115,14 +147,49 @@ public class MainMenuController implements Initializable {
             Parent root = loader.load();
             GuiController guiController = loader.getController();
 
+            // Create a properly constrained StackPane
+            StackPane centeredRoot = new StackPane();
+            centeredRoot.setAlignment(javafx.geometry.Pos.CENTER);
+            centeredRoot.setStyle("-fx-background-color: #1a1b26;");
+
+            // Force the root to maintain its preferred size
+            root.setStyle("-fx-pref-width: 540px; -fx-pref-height: 720px; -fx-max-width: 540px; -fx-max-height: 720px;");
+
+            centeredRoot.getChildren().add(root);
+
             Stage stage = (Stage) zenModePanel.getScene().getWindow();
-            Scene scene = new Scene(root, 540, 720);
-            stage.setScene(scene);
+            Scene currentScene = stage.getScene();
+
+            // Apply scaling
+            currentScene.widthProperty().addListener((obs, oldVal, newVal) -> {
+                updateScaling(centeredRoot, currentScene);
+            });
+
+            currentScene.heightProperty().addListener((obs, oldVal, newVal) -> {
+                updateScaling(centeredRoot, currentScene);
+            });
+
+            currentScene.setRoot(centeredRoot);
+            updateScaling(centeredRoot, currentScene);
 
             new GameController(guiController, mode);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void updateScaling(StackPane centeredRoot, Scene scene) {
+        double baseWidth = 540;
+        double baseHeight = 720;
+
+        double scaleX = scene.getWidth() / baseWidth;
+        double scaleY = scene.getHeight() / baseHeight;
+
+        double scale = Math.min(scaleX, scaleY);
+
+        centeredRoot.setScaleX(scale);
+        centeredRoot.setScaleY(scale);
+        centeredRoot.setPrefSize(scene.getWidth(), scene.getHeight());
     }
 }
