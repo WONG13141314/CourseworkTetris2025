@@ -14,9 +14,17 @@ import javafx.stage.Stage;
 public class MenuNavigator {
 
     private final SoundManager soundManager;
+    private Runnable onReturnToMenuCleanup;
 
     public MenuNavigator(SoundManager soundManager) {
         this.soundManager = soundManager;
+    }
+
+    /**
+     * Set cleanup callback to be called before returning to menu
+     */
+    public void setOnReturnToMenuCleanup(Runnable callback) {
+        this.onReturnToMenuCleanup = callback;
     }
 
     /**
@@ -24,6 +32,10 @@ public class MenuNavigator {
      */
     public void returnToMainMenu(Stage stage) {
         try {
+            if (onReturnToMenuCleanup != null) {
+                onReturnToMenuCleanup.run();
+            }
+
             soundManager.stopBackgroundMusic();
             soundManager.stopGameOverMusic();
 

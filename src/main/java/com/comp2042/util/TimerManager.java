@@ -17,6 +17,7 @@ public class TimerManager {
     private Timeline blitzTimeline;
     private int blitzTimeRemaining;
     private Runnable onBlitzTimeUp;
+    private boolean isCleanedUp = false;
 
     public TimerManager(GameMode gameMode, Label timerLabel) {
         this.gameMode = gameMode;
@@ -42,7 +43,12 @@ public class TimerManager {
     }
 
     private void setupBlitzTimer() {
+        if (blitzTimeline != null) {
+            blitzTimeline.stop();
+        }
+
         blitzTimeRemaining = GameConstants.BLITZ_TIME_SECONDS;
+        isCleanedUp = false;
 
         if (timerLabel != null) {
             timerLabel.setText(formatTime(blitzTimeRemaining));
@@ -50,6 +56,10 @@ public class TimerManager {
         }
 
         blitzTimeline = new Timeline(new KeyFrame(Duration.seconds(1.0), e -> {
+            if (isCleanedUp) {
+                return;
+            }
+
             blitzTimeRemaining--;
 
             if (timerLabel != null) {
@@ -62,7 +72,7 @@ public class TimerManager {
 
             if (blitzTimeRemaining <= 0) {
                 stop();
-                if (onBlitzTimeUp != null) {
+                if (onBlitzTimeUp != null && !isCleanedUp) {
                     onBlitzTimeUp.run();
                 }
             }
@@ -71,6 +81,10 @@ public class TimerManager {
     }
 
     public void start() {
+        if (isCleanedUp) {
+            return;
+        }
+
         if (gameMode == GameMode.ZEN && zenTimer != null) {
             zenTimer.start();
         } else if (gameMode == GameMode.BLITZ && blitzTimeline != null) {
@@ -109,6 +123,17 @@ public class TimerManager {
                 blitzTimeline.stop();
             }
             setupBlitzTimer();
+        }
+    }
+
+    public void cleanup() {
+        isCleanedUp = true;
+
+        if (gameMode == GameMode.ZEN && zenTimer != null) {
+            zenTimer.stop();
+        } else if (gameMode == GameMode.BLITZ && blitzTimeline != null) {
+            blitzTimeline.stop();
+            blitzTimeline = null;
         }
     }
 

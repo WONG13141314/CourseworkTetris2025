@@ -89,8 +89,13 @@ public class GameLifecycleManager {
      * Handle game over
      */
     public void handleGameOver() {
+        if (stateManager.isGameOver()) {
+            return;
+        }
+
         loopManager.stop();
         timerManager.stop();
+        timerManager.cleanup();
         inputHandler.stopAllTimers();
         soundManager.stopBackgroundMusic();
         soundManager.playGameOverMusic();
@@ -113,6 +118,9 @@ public class GameLifecycleManager {
     public void startNewGame() {
         loopManager.stop();
         inputHandler.stopAllTimers();
+
+        timerManager.cleanup();
+
         uiManager.hideGameOver();
         rendererCoordinator.setVisible(true);
         inputHandler.reset();

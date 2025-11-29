@@ -77,6 +77,9 @@ public class GuiController implements Initializable {
         uiManager = new UIManager(scoreLabel, highScoreLabel, gameModeLabel,
                 gameOverPanel, pauseGroup, groupNotification, blitzLevelPanel);
         menuNavigator = new MenuNavigator(soundManager);
+
+        // Set up cleanup callback for when returning to menu
+        menuNavigator.setOnReturnToMenuCleanup(this::cleanupBeforeMenuReturn);
     }
 
     private void setupInputSystem() {
@@ -167,5 +170,21 @@ public class GuiController implements Initializable {
     private void returnToMenu() {
         Stage stage = (Stage) gamePanel.getScene().getWindow();
         menuNavigator.returnToMainMenu(stage);
+    }
+
+    /**
+     * Cleanup all game resources before returning to menu
+     */
+    private void cleanupBeforeMenuReturn() {
+        if (gameInitializer != null && gameInitializer.getLoopManager() != null) {
+            gameInitializer.getLoopManager().stop();
+        }
+        if (gameInitializer != null && gameInitializer.getTimerManager() != null) {
+            gameInitializer.getTimerManager().cleanup();
+        }
+        if (inputHandler != null) {
+            inputHandler.stopAllTimers();
+            inputHandler.reset();
+        }
     }
 }
