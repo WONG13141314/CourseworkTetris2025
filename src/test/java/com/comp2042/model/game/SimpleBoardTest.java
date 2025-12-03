@@ -215,9 +215,9 @@ class SimpleBoardTest {
 
     @Test
     void testBlitzMode_DoesNotClearBoardOnGameOver() {
-        // Fill the board
+        // Fill the board including spawn area (rows 0-3)
         int[][] matrix = blitzBoard.getBoardMatrix();
-        for (int i = 2; i < matrix.length; i++) {
+        for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[i].length; j++) {
                 matrix[i][j] = 1;
             }
