@@ -180,9 +180,8 @@ class SimpleBoardTest {
 
     @Test
     void testZenMode_BoardClearsOnGameOver() {
-        // Fill the board almost completely (leave just top 2 rows)
         int[][] matrix = zenBoard.getBoardMatrix();
-        for (int i = 2; i < matrix.length; i++) {
+        for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[i].length; j++) {
                 matrix[i][j] = 1;
             }
