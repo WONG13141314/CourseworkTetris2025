@@ -8,7 +8,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 /**
- * Handles rendering of the active falling brick
+ * Handles rendering of the active falling brick.
+ * Manages brick positioning, rotation, and color updates.
  */
 public class BrickRenderer {
 
@@ -16,13 +17,21 @@ public class BrickRenderer {
     private final GridPane gamePanel;
     private Rectangle[][] rectangles;
 
+    /**
+     * Constructs brick renderer.
+     *
+     * @param brickPanel overlay panel for brick
+     * @param gamePanel main game panel for positioning
+     */
     public BrickRenderer(GridPane brickPanel, GridPane gamePanel) {
         this.brickPanel = brickPanel;
         this.gamePanel = gamePanel;
     }
 
     /**
-     * Initialize the brick rectangles based on initial brick data
+     * Initializes brick rectangles based on initial brick data.
+     *
+     * @param brickData initial brick shape matrix
      */
     public void initialize(int[][] brickData) {
         rectangles = new Rectangle[brickData.length][brickData[0].length];
@@ -44,10 +53,13 @@ public class BrickRenderer {
     }
 
     /**
-     * Refresh the brick display with new position and rotation
+     * Refreshes brick display with new position and rotation.
+     * Handles brick size changes from rotation.
+     *
+     * @param viewData updated view data
      */
     public void refresh(ViewData viewData) {
-        // Remove old rectangles from game panel
+        // Remove old rectangles
         for (Rectangle[] row : rectangles) {
             for (Rectangle r : row) {
                 gamePanel.getChildren().remove(r);
@@ -56,7 +68,7 @@ public class BrickRenderer {
 
         int[][] brickData = viewData.getBrickData();
 
-        // Recreate rectangles if size changed (rotation)
+        // Recreate if size changed
         if (rectangles.length != brickData.length ||
                 rectangles[0].length != brickData[0].length) {
             rectangles = new Rectangle[brickData.length][brickData[0].length];
@@ -72,7 +84,7 @@ public class BrickRenderer {
             }
         }
 
-        // Update rectangles and add to game panel
+        // Update and position rectangles
         for (int i = 0; i < brickData.length; i++) {
             for (int j = 0; j < brickData[i].length; j++) {
                 if (brickData[i][j] != 0) {
@@ -91,7 +103,9 @@ public class BrickRenderer {
     }
 
     /**
-     * Position the brick panel overlay (used for initial brick placement)
+     * Positions the brick panel overlay.
+     *
+     * @param viewData view data with position information
      */
     public void positionPanel(ViewData viewData) {
         double brickX = GameConstants.GAME_PANEL_X +
@@ -105,6 +119,11 @@ public class BrickRenderer {
         brickPanel.setLayoutY(brickY);
     }
 
+    /**
+     * Sets brick visibility.
+     *
+     * @param visible true to show, false to hide
+     */
     public void setVisible(boolean visible) {
         brickPanel.setVisible(visible);
     }

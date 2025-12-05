@@ -5,11 +5,19 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.geometry.Pos;
 
+/**
+ * Game over screen panel component.
+ * Displays game over message, scores, and instructions for restart.
+ */
 public class GameOverPanel extends BorderPane {
 
     private final Label scoreLabel;
     private final Label highScoreLabel;
 
+    /**
+     * Constructs game over panel with styled labels.
+     * Creates "GAME OVER" text and score display elements.
+     */
     public GameOverPanel() {
         getStyleClass().add("game-over-container");
 
@@ -32,6 +40,13 @@ public class GameOverPanel extends BorderPane {
         setCenter(container);
     }
 
+    /**
+     * Updates score display on game over panel.
+     *
+     * @param score final score achieved
+     * @param highScore best score for this mode
+     * @param showScores true to display scores (Blitz mode), false to hide (Zen mode)
+     */
     public void updateScores(int score, int highScore, boolean showScores) {
         if (showScores) {
             scoreLabel.setText("SCORE: " + score);

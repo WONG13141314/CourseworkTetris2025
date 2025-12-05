@@ -10,17 +10,22 @@ import com.comp2042.view.rendering.GameRendererCoordinator;
 import javafx.scene.layout.GridPane;
 
 /**
- * Coordinates input handling with game events and rendering
+ * Coordinates input handling with game events and rendering.
  */
 public class InputCoordinator {
 
     private final GameStateManager stateManager;
     private final InputHandler inputHandler;
     private final GridPane gamePanel;
-
     private GameEventHandler eventHandler;
     private GameRendererCoordinator rendererCoordinator;
 
+    /**
+     * Creates a new input coordinator.
+     * @param stateManager game state manager
+     * @param inputHandler input handler
+     * @param gamePanel game panel
+     */
     public InputCoordinator(GameStateManager stateManager, InputHandler inputHandler,
                             GridPane gamePanel) {
         this.stateManager = stateManager;
@@ -28,6 +33,11 @@ public class InputCoordinator {
         this.gamePanel = gamePanel;
     }
 
+    /**
+     * Sets game components.
+     * @param eventHandler event handler
+     * @param rendererCoordinator renderer coordinator
+     */
     public void setComponents(GameEventHandler eventHandler,
                               GameRendererCoordinator rendererCoordinator) {
         this.eventHandler = eventHandler;
@@ -35,7 +45,10 @@ public class InputCoordinator {
     }
 
     /**
-     * Setup input callback handlers
+     * Sets up input callbacks.
+     * @param onPause pause callback
+     * @param onNewGame new game callback
+     * @param onReturnToMenu return to menu callback
      */
     public void setupCallbacks(Runnable onPause, Runnable onNewGame, Runnable onReturnToMenu) {
         inputHandler.setCallback(new InputHandler.InputCallback() {
@@ -88,6 +101,10 @@ public class InputCoordinator {
         });
     }
 
+    /**
+     * Handles move events.
+     * @param event move event
+     */
     private void handleMove(MoveEvent event) {
         if (event.getEventType() == EventType.DOWN) {
             DownData downData = eventHandler.handleDown(event);
@@ -102,6 +119,10 @@ public class InputCoordinator {
         }
     }
 
+    /**
+     * Handles rotate events.
+     * @param event move event
+     */
     private void handleRotate(MoveEvent event) {
         ViewData vd = eventHandler.handleRotate(event);
         if (vd != null) {
@@ -109,6 +130,10 @@ public class InputCoordinator {
         }
     }
 
+    /**
+     * Handles hard drop events.
+     * @param event move event
+     */
     private void handleHardDrop(MoveEvent event) {
         DownData downData = eventHandler.handleHardDrop(event);
         if (downData != null && downData.getViewData() != null) {
@@ -116,6 +141,10 @@ public class InputCoordinator {
         }
     }
 
+    /**
+     * Handles hold events.
+     * @param event move event
+     */
     private void handleHold(MoveEvent event) {
         ViewData vd = eventHandler.handleHold(event);
         if (vd != null) {

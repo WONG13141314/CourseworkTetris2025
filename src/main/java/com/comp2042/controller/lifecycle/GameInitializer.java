@@ -17,7 +17,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 
 /**
- * Handles initialization of all game components
+ * Handles initialization of all game components at startup.
  */
 public class GameInitializer {
 
@@ -27,7 +27,6 @@ public class GameInitializer {
     private final UIManager uiManager;
     private final SoundManager soundManager;
 
-    // Components to initialize
     private TimerManager timerManager;
     private GameRendererCoordinator rendererCoordinator;
     private GameEventHandler eventHandler;
@@ -35,6 +34,14 @@ public class GameInitializer {
     private BlitzModeManager blitzModeManager;
     private ZenModeManager zenModeManager;
 
+    /**
+     * Creates a new game initializer.
+     * @param gameMode game mode
+     * @param stateManager state manager
+     * @param inputHandler input handler
+     * @param uiManager UI manager
+     * @param soundManager sound manager
+     */
     public GameInitializer(GameMode gameMode, GameStateManager stateManager,
                            InputHandler inputHandler, UIManager uiManager,
                            SoundManager soundManager) {
@@ -46,7 +53,10 @@ public class GameInitializer {
     }
 
     /**
-     * Initialize game mode specific components
+     * Initializes game mode specific components.
+     * @param blitzLevelLabel label for Blitz level
+     * @param blitzProgressLabel label for Blitz progress
+     * @param timerLabel label for timer
      */
     public void initializeGameMode(Label blitzLevelLabel, Label blitzProgressLabel, Label timerLabel) {
         uiManager.setupGameMode(gameMode);
@@ -59,7 +69,14 @@ public class GameInitializer {
     }
 
     /**
-     * Initialize rendering system
+     * Initializes rendering system.
+     * @param gamePanel game panel
+     * @param brickPanel brick panel
+     * @param nextBrickPanel next brick panel
+     * @param holdBrickPanel hold brick panel
+     * @param parentPane parent pane
+     * @param boardMatrix board matrix
+     * @param brick brick view data
      */
     public void initializeRendering(GridPane gamePanel, GridPane brickPanel,
                                     GridPane nextBrickPanel, GridPane holdBrickPanel,
@@ -71,7 +88,9 @@ public class GameInitializer {
     }
 
     /**
-     * Initialize timer system
+     * Initializes timer system.
+     * @param timerLabel timer label
+     * @param onBlitzTimeUp callback when Blitz time expires
      */
     public void initializeTimer(Label timerLabel, Runnable onBlitzTimeUp) {
         timerManager = new TimerManager(gameMode, timerLabel);
@@ -80,7 +99,8 @@ public class GameInitializer {
     }
 
     /**
-     * Initialize game loop
+     * Initializes game loop.
+     * @param onDropTick callback for each drop tick
      */
     public void initializeGameLoop(Runnable onDropTick) {
         loopManager = new GameLoopManager(gameMode);
@@ -95,7 +115,8 @@ public class GameInitializer {
     }
 
     /**
-     * Initialize event handling
+     * Initializes event handling.
+     * @param listener input event listener
      */
     public void initializeEventHandler(InputEventListener listener) {
         eventHandler = new GameEventHandler(listener, gameMode);
@@ -104,11 +125,51 @@ public class GameInitializer {
         eventHandler.setOnNotification(text -> uiManager.showNotification(text));
     }
 
-    // Getters
-    public TimerManager getTimerManager() { return timerManager; }
-    public GameRendererCoordinator getRendererCoordinator() { return rendererCoordinator; }
-    public GameEventHandler getEventHandler() { return eventHandler; }
-    public GameLoopManager getLoopManager() { return loopManager; }
-    public BlitzModeManager getBlitzModeManager() { return blitzModeManager; }
-    public ZenModeManager getZenModeManager() { return zenModeManager; }
+    /**
+     * Gets timer manager.
+     * @return timer manager
+     */
+    public TimerManager getTimerManager() {
+        return timerManager;
+    }
+
+    /**
+     * Gets renderer coordinator.
+     * @return renderer coordinator
+     */
+    public GameRendererCoordinator getRendererCoordinator() {
+        return rendererCoordinator;
+    }
+
+    /**
+     * Gets event handler.
+     * @return event handler
+     */
+    public GameEventHandler getEventHandler() {
+        return eventHandler;
+    }
+
+    /**
+     * Gets loop manager.
+     * @return loop manager
+     */
+    public GameLoopManager getLoopManager() {
+        return loopManager;
+    }
+
+    /**
+     * Gets Blitz mode manager.
+     * @return Blitz mode manager
+     */
+    public BlitzModeManager getBlitzModeManager() {
+        return blitzModeManager;
+    }
+
+    /**
+     * Gets Zen mode manager.
+     * @return Zen mode manager
+     */
+    public ZenModeManager getZenModeManager() {
+        return zenModeManager;
+    }
 }

@@ -7,7 +7,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 /**
- * Handles rendering of the next brick and hold brick preview panels
+ * Handles rendering of next brick and hold brick preview panels.
+ * Centers bricks within fixed-size preview areas.
  */
 public class PreviewRenderer {
 
@@ -16,13 +17,21 @@ public class PreviewRenderer {
     private Rectangle[][] nextBrickRectangles;
     private Rectangle[][] holdBrickRectangles;
 
+    /**
+     * Constructs preview renderer.
+     *
+     * @param nextBrickPanel panel for next brick
+     * @param holdBrickPanel panel for hold brick
+     */
     public PreviewRenderer(GridPane nextBrickPanel, GridPane holdBrickPanel) {
         this.nextBrickPanel = nextBrickPanel;
         this.holdBrickPanel = holdBrickPanel;
     }
 
     /**
-     * Initialize next brick preview
+     * Initializes next brick preview.
+     *
+     * @param nextBrickData initial next brick data
      */
     public void initializeNextBrick(int[][] nextBrickData) {
         if (nextBrickPanel != null) {
@@ -31,7 +40,9 @@ public class PreviewRenderer {
     }
 
     /**
-     * Update next brick preview
+     * Updates next brick preview.
+     *
+     * @param nextBrickData updated next brick data
      */
     public void updateNextBrick(int[][] nextBrickData) {
         if (nextBrickPanel != null) {
@@ -40,7 +51,9 @@ public class PreviewRenderer {
     }
 
     /**
-     * Update hold brick preview
+     * Updates hold brick preview.
+     *
+     * @param holdBrickData updated hold brick data, or null/empty to clear
      */
     public void updateHoldBrick(int[][] holdBrickData) {
         if (holdBrickPanel != null) {
@@ -54,7 +67,11 @@ public class PreviewRenderer {
     }
 
     /**
-     * Render a brick centered in a preview panel
+     * Renders brick centered in preview panel.
+     *
+     * @param brickData brick shape matrix
+     * @param panel target GridPane
+     * @param isNextBrick true if next brick, false if hold brick
      */
     private void renderCenteredBrick(int[][] brickData, GridPane panel, boolean isNextBrick) {
         panel.getChildren().clear();

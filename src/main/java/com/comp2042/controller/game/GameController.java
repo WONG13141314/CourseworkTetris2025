@@ -11,12 +11,20 @@ import com.comp2042.model.data.MoveEvent;
 import com.comp2042.model.data.ViewData;
 import com.comp2042.view.game.GuiController;
 
+/**
+ * Main game controller connecting model and view.
+ */
 public class GameController implements InputEventListener {
 
     private Board board;
     private final GuiController viewGuiController;
     private final GameMode gameMode;
 
+    /**
+     * Creates a new game controller.
+     * @param c GUI controller
+     * @param gameMode game mode
+     */
     public GameController(GuiController c, GameMode gameMode) {
         this.gameMode = gameMode;
         this.viewGuiController = c;

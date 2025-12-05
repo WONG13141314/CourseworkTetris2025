@@ -5,35 +5,73 @@ import com.comp2042.enums.EventType;
 import com.comp2042.model.data.MoveEvent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-
 import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Handles all keyboard input
+ * Handles all keyboard input for the game.
  */
 public class InputHandler {
 
     private final Set<KeyCode> pressedKeys = new HashSet<>();
     private final DASManager dasManager = new DASManager();
     private boolean spacePressed = false;
-
     private InputCallback callback;
 
+    /**
+     * Callback interface for input events.
+     */
     public interface InputCallback {
+        /**
+         * Called on movement input.
+         * @param event move event
+         */
         void onMove(MoveEvent event);
+
+        /**
+         * Called on rotation input.
+         * @param event move event
+         */
         void onRotate(MoveEvent event);
+
+        /**
+         * Called on hard drop input.
+         * @param event move event
+         */
         void onHardDrop(MoveEvent event);
+
+        /**
+         * Called on hold input.
+         * @param event move event
+         */
         void onHold(MoveEvent event);
+
+        /**
+         * Called on pause input.
+         */
         void onPause();
+
+        /**
+         * Called on new game input.
+         */
         void onNewGame();
+
+        /**
+         * Called on return to menu input.
+         */
         void onReturnToMenu();
     }
 
+    /**
+     * Creates a new input handler.
+     */
     public InputHandler() {
         setupDASCallbacks();
     }
 
+    /**
+     * Sets up DAS (Delayed Auto Shift) callbacks.
+     */
     private void setupDASCallbacks() {
         dasManager.setOnLeftRepeat(() -> {
             if (callback != null) {
@@ -54,10 +92,20 @@ public class InputHandler {
         });
     }
 
+    /**
+     * Sets the input callback.
+     * @param callback input callback
+     */
     public void setCallback(InputCallback callback) {
         this.callback = callback;
     }
 
+    /**
+     * Handles key press events.
+     * @param keyEvent key event
+     * @param isPaused whether game is paused
+     * @param isGameOver whether game is over
+     */
     public void handleKeyPressed(KeyEvent keyEvent, boolean isPaused, boolean isGameOver) {
         KeyCode code = keyEvent.getCode();
 
@@ -95,6 +143,11 @@ public class InputHandler {
         }
     }
 
+    /**
+     * Handles game control inputs.
+     * @param keyEvent key event
+     * @param code key code
+     */
     private void handleGameControls(KeyEvent keyEvent, KeyCode code) {
         if (pressedKeys.contains(code)) {
             return;
@@ -136,6 +189,10 @@ public class InputHandler {
         }
     }
 
+    /**
+     * Handles key release events.
+     * @param keyEvent key event
+     */
     public void handleKeyReleased(KeyEvent keyEvent) {
         KeyCode code = keyEvent.getCode();
 
@@ -156,10 +213,16 @@ public class InputHandler {
         keyEvent.consume();
     }
 
+    /**
+     * Stops all DAS timers.
+     */
     public void stopAllTimers() {
         dasManager.stopAll();
     }
 
+    /**
+     * Resets input state.
+     */
     public void reset() {
         dasManager.reset();
         pressedKeys.clear();

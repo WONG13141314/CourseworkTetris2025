@@ -7,6 +7,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
+/**
+ * Manages all game sound effects and background music.
+ * Implements singleton pattern for global access.
+ */
 public class SoundManager {
     private static SoundManager instance;
     private ExecutorService soundExecutor;
@@ -19,6 +23,9 @@ public class SoundManager {
     private static final float CLEAR_ROW_VOLUME = 0.9f;
     private static final float GAME_OVER_VOLUME = 0.8f;
 
+    /**
+     * Creates a new sound manager with thread pool for audio playback.
+     */
     public SoundManager() {
         soundExecutor = Executors.newFixedThreadPool(3, new ThreadFactory() {
             @Override
@@ -30,6 +37,10 @@ public class SoundManager {
         });
     }
 
+    /**
+     * Gets the singleton instance.
+     * @return sound manager instance
+     */
     public static SoundManager getInstance() {
         if (instance == null) {
             instance = new SoundManager();
@@ -37,6 +48,9 @@ public class SoundManager {
         return instance;
     }
 
+    /**
+     * Plays background music in loop.
+     */
     public void playBackgroundMusic() {
         if (isMusicPlaying) return;
 
@@ -80,6 +94,9 @@ public class SoundManager {
         });
     }
 
+    /**
+     * Plays sound effect for clearing rows.
+     */
     public void playClearRow() {
         soundExecutor.submit(() -> {
             try {
@@ -111,6 +128,9 @@ public class SoundManager {
         });
     }
 
+    /**
+     * Plays game over music in loop.
+     */
     public void playGameOverMusic() {
         if (isGameOverMusicPlaying) return;
 
@@ -154,6 +174,9 @@ public class SoundManager {
         });
     }
 
+    /**
+     * Stops game over music.
+     */
     public void stopGameOverMusic() {
         if (gameOverMusic != null) {
             gameOverMusic.stop();
@@ -163,6 +186,9 @@ public class SoundManager {
         isGameOverMusicPlaying = false;
     }
 
+    /**
+     * Stops background music.
+     */
     public void stopBackgroundMusic() {
         if (backgroundMusic != null) {
             backgroundMusic.stop();
@@ -172,12 +198,18 @@ public class SoundManager {
         isMusicPlaying = false;
     }
 
+    /**
+     * Pauses background music.
+     */
     public void pauseBackgroundMusic() {
         if (backgroundMusic != null && backgroundMusic.isRunning()) {
             backgroundMusic.stop();
         }
     }
 
+    /**
+     * Resumes background music.
+     */
     public void resumeBackgroundMusic() {
         if (backgroundMusic != null && !backgroundMusic.isRunning()) {
             backgroundMusic.start();

@@ -23,12 +23,11 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-
 import java.net.URL;
 import java.util.ResourceBundle;
 
 /**
- * Main GUI Controller - coordinates all game components
+ * Main GUI controller coordinating all game components.
  */
 public class GuiController implements Initializable {
 
@@ -71,6 +70,9 @@ public class GuiController implements Initializable {
         setupInputSystem();
     }
 
+    /**
+     * Initializes manager components.
+     */
     private void initializeManagers() {
         stateManager = new GameStateManager();
         inputHandler = new InputHandler();
@@ -78,10 +80,12 @@ public class GuiController implements Initializable {
                 gameOverPanel, pauseGroup, groupNotification, blitzLevelPanel);
         menuNavigator = new MenuNavigator(soundManager);
 
-        // Set up cleanup callback for when returning to menu
         menuNavigator.setOnReturnToMenuCleanup(this::cleanupBeforeMenuReturn);
     }
 
+    /**
+     * Sets up input system.
+     */
     private void setupInputSystem() {
         inputCoordinator = new InputCoordinator(stateManager, inputHandler, gamePanel);
 
@@ -93,6 +97,10 @@ public class GuiController implements Initializable {
         );
     }
 
+    /**
+     * Sets the game mode.
+     * @param mode game mode
+     */
     public void setGameMode(GameMode mode) {
         this.gameMode = mode;
 
@@ -104,6 +112,11 @@ public class GuiController implements Initializable {
         gameInitializer.initializeGameMode(blitzLevelLabel, blitzProgressLabel, timerLabel);
     }
 
+    /**
+     * Initializes game view.
+     * @param boardMatrix board matrix
+     * @param brick brick view data
+     */
     public void initGameView(int[][] boardMatrix, com.comp2042.model.data.ViewData brick) {
         gameInitializer.initializeRendering(gamePanel, brickPanel, nextBrickPanel,
                 holdBrickPanel, (Pane) gamePanel.getParent(), boardMatrix, brick);
@@ -142,38 +155,63 @@ public class GuiController implements Initializable {
         );
     }
 
+    /**
+     * Sets event listener.
+     * @param listener event listener
+     */
     public void setEventListener(InputEventListener listener) {
         gameInitializer.initializeEventHandler(listener);
     }
 
+    /**
+     * Binds score property.
+     * @param score score property
+     */
     public void bindScore(IntegerProperty score) {
         uiManager.bindScore(score);
     }
 
+    /**
+     * Binds high score property.
+     * @param highScore high score property
+     */
     public void bindHighScore(IntegerProperty highScore) {
         uiManager.bindHighScore(highScore);
     }
 
+    /**
+     * Refreshes game background.
+     * @param board board matrix
+     */
     public void refreshGameBackground(int[][] board) {
         gameInitializer.getRendererCoordinator().refreshBoard(board);
     }
 
+    /**
+     * Triggers game over.
+     */
     public void gameOver() {
         lifecycleManager.handleGameOver();
     }
 
+    /**
+     * Starts new game.
+     */
     public void newGame() {
         lifecycleManager.startNewGame();
         gamePanel.requestFocus();
     }
 
+    /**
+     * Returns to main menu.
+     */
     private void returnToMenu() {
         Stage stage = (Stage) gamePanel.getScene().getWindow();
         menuNavigator.returnToMainMenu(stage);
     }
 
     /**
-     * Cleanup all game resources before returning to menu
+     * Cleans up resources before returning to menu.
      */
     private void cleanupBeforeMenuReturn() {
         if (gameInitializer != null && gameInitializer.getLoopManager() != null) {

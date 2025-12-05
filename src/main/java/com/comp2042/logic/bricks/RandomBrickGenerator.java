@@ -6,12 +6,19 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
 
-// Generates random bricks using 7-bag system
+/**
+ * Generates random bricks using the 7-bag system.
+ * Ensures fair distribution by shuffling all 7 brick types into bags.
+ */
 public class RandomBrickGenerator implements BrickGenerator {
 
     private final List<Brick> brickList;
     private final Deque<Brick> nextBricks = new ArrayDeque<>();
 
+    /**
+     * Constructs a new generator and fills initial bags.
+     * Starts with 14 bricks (2 full bags) ready.
+     */
     public RandomBrickGenerator() {
         brickList = new ArrayList<>();
         brickList.add(new IBrick());
@@ -26,7 +33,10 @@ public class RandomBrickGenerator implements BrickGenerator {
         fillBag();
     }
 
-    // Fill bag with shuffled set of all 7 brick types
+    /**
+     * Fills bag with shuffled set of all 7 brick types.
+     * Ensures each type appears exactly once per bag.
+     */
     private void fillBag() {
         List<Brick> newBag = new ArrayList<>(brickList);
         Collections.shuffle(newBag);
@@ -46,6 +56,7 @@ public class RandomBrickGenerator implements BrickGenerator {
         return nextBricks.peek();
     }
 
+    @Override
     public void reset() {
         nextBricks.clear();
         fillBag();

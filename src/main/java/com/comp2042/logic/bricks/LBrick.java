@@ -1,14 +1,20 @@
 package com.comp2042.logic.bricks;
 
 import com.comp2042.util.MatrixOperations;
-
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * L-shaped Tetris brick.
+ * Has 4 rotation states. Uses color value 3 (green).
+ */
 public final class LBrick implements Brick {
 
     private final List<int[][]> brickMatrix = new ArrayList<>();
 
+    /**
+     * Constructs L-brick with all 4 rotation states.
+     */
     public LBrick() {
         brickMatrix.add(new int[][]{
                 {0, 0, 0, 0},

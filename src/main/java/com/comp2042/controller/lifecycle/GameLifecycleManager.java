@@ -13,7 +13,7 @@ import com.comp2042.view.rendering.GameRendererCoordinator;
 import com.comp2042.view.game.UIManager;
 
 /**
- * Manages game lifecycle (pause, resume, new game, game over)
+ * Manages game lifecycle events including pause, resume, new game, and game over.
  */
 public class GameLifecycleManager {
 
@@ -30,6 +30,14 @@ public class GameLifecycleManager {
     private BlitzModeManager blitzModeManager;
     private ZenModeManager zenModeManager;
 
+    /**
+     * Creates a new game lifecycle manager.
+     * @param gameMode game mode
+     * @param stateManager state manager
+     * @param inputHandler input handler
+     * @param uiManager UI manager
+     * @param soundManager sound manager
+     */
     public GameLifecycleManager(GameMode gameMode, GameStateManager stateManager,
                                 InputHandler inputHandler, UIManager uiManager,
                                 SoundManager soundManager) {
@@ -40,6 +48,15 @@ public class GameLifecycleManager {
         this.soundManager = soundManager;
     }
 
+    /**
+     * Sets game components.
+     * @param loopManager loop manager
+     * @param timerManager timer manager
+     * @param rendererCoordinator renderer coordinator
+     * @param eventHandler event handler
+     * @param blitzModeManager blitz mode manager
+     * @param zenModeManager zen mode manager
+     */
     public void setComponents(GameLoopManager loopManager, TimerManager timerManager,
                               GameRendererCoordinator rendererCoordinator,
                               GameEventHandler eventHandler, BlitzModeManager blitzModeManager,
@@ -53,7 +70,7 @@ public class GameLifecycleManager {
     }
 
     /**
-     * Toggle pause state
+     * Toggles pause state.
      */
     public void togglePause() {
         if (!stateManager.isPaused()) {
@@ -64,7 +81,7 @@ public class GameLifecycleManager {
     }
 
     /**
-     * Pause the game
+     * Pauses the game.
      */
     private void pause() {
         loopManager.stop();
@@ -75,7 +92,7 @@ public class GameLifecycleManager {
     }
 
     /**
-     * Resume the game
+     * Resumes the game.
      */
     private void resume() {
         loopManager.start();
@@ -86,7 +103,7 @@ public class GameLifecycleManager {
     }
 
     /**
-     * Handle game over
+     * Handles game over event.
      */
     public void handleGameOver() {
         if (stateManager.isGameOver()) {
@@ -113,7 +130,7 @@ public class GameLifecycleManager {
     }
 
     /**
-     * Start a new game
+     * Starts a new game.
      */
     public void startNewGame() {
         loopManager.stop();

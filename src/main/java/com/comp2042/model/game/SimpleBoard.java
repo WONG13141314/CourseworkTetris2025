@@ -9,9 +9,11 @@ import com.comp2042.model.data.ClearRow;
 import com.comp2042.model.data.NextShapeInfo;
 import com.comp2042.model.data.ViewData;
 import com.comp2042.util.MatrixOperations;
-
 import java.awt.*;
 
+/**
+ * Main game board implementation managing game state and piece movement.
+ */
 public class SimpleBoard implements Board {
 
     private final int width;
@@ -26,6 +28,12 @@ public class SimpleBoard implements Board {
     private Point currentOffset;
     private boolean boardCleared = false;
 
+    /**
+     * Creates a new game board.
+     * @param width board width in cells
+     * @param height board height in cells
+     * @param gameMode the game mode (ZEN or BLITZ)
+     */
     public SimpleBoard(int width, int height, GameMode gameMode) {
         this.width = width;
         this.height = height;
@@ -104,7 +112,6 @@ public class SimpleBoard implements Board {
         boolean gameOver = detector.wouldCollide(brickRotator.getCurrentShape(),
                 (int) currentOffset.getX(), (int) currentOffset.getY());
 
-        // Zen mode : clear board on game over instead of ending game
         if (gameOver && gameMode == GameMode.ZEN) {
             clearEntireBoard();
             boardCleared = true;
@@ -117,6 +124,9 @@ public class SimpleBoard implements Board {
         return gameOver;
     }
 
+    /**
+     * Clears the entire board (used in Zen mode on game over).
+     */
     private void clearEntireBoard() {
         currentGameMatrix = new int[width][height];
     }
@@ -227,6 +237,10 @@ public class SimpleBoard implements Board {
         return boardCleared;
     }
 
+    /**
+     * Gets the game mode.
+     * @return the game mode
+     */
     public GameMode getGameMode() {
         return gameMode;
     }

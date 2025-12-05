@@ -8,7 +8,7 @@ import javafx.animation.Timeline;
 import javafx.util.Duration;
 
 /**
- * Manages the main game loop (dropping pieces)
+ * Manages the main game loop for automatic piece dropping.
  */
 public class GameLoopManager {
 
@@ -17,23 +17,42 @@ public class GameLoopManager {
     private Runnable onDropTick;
     private BlitzModeManager blitzModeManager;
 
+    /**
+     * Creates a new game loop manager.
+     * @param gameMode game mode
+     */
     public GameLoopManager(GameMode gameMode) {
         this.gameMode = gameMode;
     }
 
+    /**
+     * Sets the Blitz mode manager for speed control.
+     * @param manager Blitz mode manager
+     */
     public void setBlitzModeManager(BlitzModeManager manager) {
         this.blitzModeManager = manager;
     }
 
+    /**
+     * Sets the callback for each drop tick.
+     * @param callback drop tick callback
+     */
     public void setOnDropTick(Runnable callback) {
         this.onDropTick = callback;
     }
 
+    /**
+     * Starts the game loop with initial speed.
+     */
     public void start() {
         int speed = getInitialSpeed();
         startWithSpeed(speed);
     }
 
+    /**
+     * Starts the game loop with specific speed.
+     * @param speed drop speed in milliseconds
+     */
     public void startWithSpeed(int speed) {
         if (dropTimeline != null) {
             dropTimeline.stop();
@@ -51,18 +70,28 @@ public class GameLoopManager {
         dropTimeline.play();
     }
 
+    /**
+     * Stops the game loop.
+     */
     public void stop() {
         if (dropTimeline != null) {
             dropTimeline.stop();
         }
     }
 
+    /**
+     * Updates speed based on current level.
+     */
     public void updateSpeed() {
         if (gameMode == GameMode.BLITZ && blitzModeManager != null) {
             startWithSpeed(blitzModeManager.getDropSpeed());
         }
     }
 
+    /**
+     * Gets the initial drop speed.
+     * @return initial speed in milliseconds
+     */
     private int getInitialSpeed() {
         if (gameMode == GameMode.BLITZ && blitzModeManager != null) {
             return blitzModeManager.getDropSpeed();

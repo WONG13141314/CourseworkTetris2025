@@ -3,7 +3,7 @@ package com.comp2042.controller.mode;
 import javafx.scene.control.Label;
 
 /**
- * Manages Zen mode specific logic (elapsed time tracking, board clear achievements)
+ * Manages Zen mode game logic including board clear tracking.
  */
 public class ZenModeManager {
 
@@ -11,12 +11,16 @@ public class ZenModeManager {
     private int totalBoardClears = 0;
     private Runnable onBoardCleared;
 
+    /**
+     * Creates a new Zen mode manager.
+     * @param timerLabel label to display elapsed time
+     */
     public ZenModeManager(Label timerLabel) {
         this.timerLabel = timerLabel;
     }
 
     /**
-     * Called when the board is cleared in Zen mode
+     * Called when the board is completely cleared.
      */
     public void notifyBoardCleared() {
         totalBoardClears++;
@@ -26,27 +30,33 @@ public class ZenModeManager {
     }
 
     /**
-     * Get total number of times the board has been cleared
+     * Gets total number of board clears.
+     * @return total board clears
      */
     public int getTotalBoardClears() {
         return totalBoardClears;
     }
 
     /**
-     * Reset Zen mode stats
+     * Resets Zen mode statistics.
      */
     public void reset() {
         totalBoardClears = 0;
     }
 
     /**
-     * Set callback for when board is cleared
+     * Sets callback for board clear events.
+     * @param callback callback to run on board clear
      */
     public void setOnBoardCleared(Runnable callback) {
         this.onBoardCleared = callback;
     }
 
+    /**
+     * Determines if board should be cleared on game over.
+     * @return true (always clear in Zen mode)
+     */
     public boolean shouldClearBoard() {
-        return true; // In Zen mode, always clear board on game over
+        return true;
     }
 }

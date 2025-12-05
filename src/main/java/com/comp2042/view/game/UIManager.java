@@ -9,7 +9,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 
 /**
- * Manages UI elements (labels, panels, notifications)
+ * Manages UI elements including labels, panels, and notifications.
  */
 public class UIManager {
 
@@ -21,6 +21,16 @@ public class UIManager {
     private final Group notificationGroup;
     private final VBox blitzLevelPanel;
 
+    /**
+     * Creates a new UI manager.
+     * @param scoreLabel score label
+     * @param highScoreLabel high score label
+     * @param gameModeLabel game mode label
+     * @param gameOverPanel game over panel
+     * @param pauseGroup pause group
+     * @param notificationGroup notification group
+     * @param blitzLevelPanel blitz level panel
+     */
     public UIManager(Label scoreLabel, Label highScoreLabel, Label gameModeLabel,
                      GameOverPanel gameOverPanel, Group pauseGroup,
                      Group notificationGroup, VBox blitzLevelPanel) {
@@ -35,6 +45,10 @@ public class UIManager {
         gameOverPanel.setVisible(false);
     }
 
+    /**
+     * Sets up game mode display.
+     * @param mode game mode
+     */
     public void setupGameMode(GameMode mode) {
         if (mode == GameMode.BLITZ) {
             if (blitzLevelPanel != null) {
@@ -51,6 +65,10 @@ public class UIManager {
         updateGameModeLabel(mode);
     }
 
+    /**
+     * Updates game mode label.
+     * @param mode game mode
+     */
     private void updateGameModeLabel(GameMode mode) {
         if (gameModeLabel != null) {
             gameModeLabel.setText(mode == GameMode.ZEN ? "ZEN MODE" : "BLITZ MODE");
@@ -62,30 +80,52 @@ public class UIManager {
         }
     }
 
+    /**
+     * Binds score property to label.
+     * @param scoreProperty score property
+     */
     public void bindScore(IntegerProperty scoreProperty) {
         if (scoreLabel != null) {
             scoreLabel.textProperty().bind(scoreProperty.asString("Score: %d"));
         }
     }
 
+    /**
+     * Binds high score property to label.
+     * @param highScoreProperty high score property
+     */
     public void bindHighScore(IntegerProperty highScoreProperty) {
         if (highScoreLabel != null) {
             highScoreLabel.textProperty().bind(highScoreProperty.asString("Best: %d"));
         }
     }
 
+    /**
+     * Shows notification.
+     * @param text notification text
+     */
     public void showNotification(String text) {
         NotificationPanel panel = new NotificationPanel(text);
         notificationGroup.getChildren().add(panel);
         panel.showScore(notificationGroup.getChildren());
     }
 
+    /**
+     * Shows or hides pause overlay.
+     * @param show whether to show
+     */
     public void showPause(boolean show) {
         if (pauseGroup != null) {
             pauseGroup.setVisible(show);
         }
     }
 
+    /**
+     * Shows game over screen.
+     * @param score final score
+     * @param highScore high score
+     * @param showScores whether to show scores
+     */
     public void showGameOver(int score, int highScore, boolean showScores) {
         gameOverPanel.updateScores(score, highScore, showScores);
         gameOverPanel.setVisible(true);
@@ -94,6 +134,9 @@ public class UIManager {
         }
     }
 
+    /**
+     * Hides game over screen.
+     */
     public void hideGameOver() {
         gameOverPanel.setVisible(false);
         if (pauseGroup != null) {

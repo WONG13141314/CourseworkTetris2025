@@ -5,18 +5,15 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.scene.input.KeyCode;
 import javafx.util.Duration;
-
 import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Manages Delayed Auto Shift (DAS) and Auto Repeat Rate (ARR) for smooth input
+ * Manages Delayed Auto Shift (DAS) and Auto Repeat Rate (ARR) for smooth continuous input.
  */
 public class DASManager {
 
     private final Set<KeyCode> pressedKeys = new HashSet<>();
-
-    // Repeat timelines
     private Timeline leftRepeat;
     private Timeline rightRepeat;
     private Timeline downRepeat;
@@ -28,20 +25,33 @@ public class DASManager {
     private Runnable onRightRepeat;
     private Runnable onDownRepeat;
 
+    /**
+     * Sets callback for left repeat.
+     * @param callback callback
+     */
     public void setOnLeftRepeat(Runnable callback) {
         this.onLeftRepeat = callback;
     }
 
+    /**
+     * Sets callback for right repeat.
+     * @param callback callback
+     */
     public void setOnRightRepeat(Runnable callback) {
         this.onRightRepeat = callback;
     }
 
+    /**
+     * Sets callback for down repeat.
+     * @param callback callback
+     */
     public void setOnDownRepeat(Runnable callback) {
         this.onDownRepeat = callback;
     }
 
     /**
-     * Start DAS/ARR for left movement
+     * Starts DAS for left movement.
+     * @param keyCode key code
      */
     public void startLeftDAS(KeyCode keyCode) {
         pressedKeys.add(keyCode);
@@ -66,7 +76,8 @@ public class DASManager {
     }
 
     /**
-     * Start DAS/ARR for right movement
+     * Starts DAS for right movement.
+     * @param keyCode key code
      */
     public void startRightDAS(KeyCode keyCode) {
         pressedKeys.add(keyCode);
@@ -91,7 +102,8 @@ public class DASManager {
     }
 
     /**
-     * Start DAS/ARR for down movement
+     * Starts DAS for down movement.
+     * @param keyCode key code
      */
     public void startDownDAS(KeyCode keyCode) {
         pressedKeys.add(keyCode);
@@ -116,7 +128,8 @@ public class DASManager {
     }
 
     /**
-     * Stop DAS for left movement
+     * Stops DAS for left movement.
+     * @param keyCode key code
      */
     public void stopLeftDAS(KeyCode keyCode) {
         pressedKeys.remove(keyCode);
@@ -127,7 +140,8 @@ public class DASManager {
     }
 
     /**
-     * Stop DAS for right movement
+     * Stops DAS for right movement.
+     * @param keyCode key code
      */
     public void stopRightDAS(KeyCode keyCode) {
         pressedKeys.remove(keyCode);
@@ -138,7 +152,8 @@ public class DASManager {
     }
 
     /**
-     * Stop DAS for down movement
+     * Stops DAS for down movement.
+     * @param keyCode key code
      */
     public void stopDownDAS(KeyCode keyCode) {
         pressedKeys.remove(keyCode);
@@ -149,7 +164,7 @@ public class DASManager {
     }
 
     /**
-     * Stop all DAS timers
+     * Stops all DAS timers.
      */
     public void stopAll() {
         stopTimeline(leftRepeat);
@@ -168,31 +183,52 @@ public class DASManager {
     }
 
     /**
-     * Reset all state
+     * Resets all state.
      */
     public void reset() {
         stopAll();
         pressedKeys.clear();
     }
 
+    /**
+     * Stops a timeline safely.
+     * @param timeline timeline to stop
+     */
     private void stopTimeline(Timeline timeline) {
         if (timeline != null) {
             timeline.stop();
         }
     }
 
+    /**
+     * Checks if left is pressed.
+     * @return true if left pressed
+     */
     private boolean isLeftPressed() {
         return pressedKeys.contains(KeyCode.LEFT) || pressedKeys.contains(KeyCode.A);
     }
 
+    /**
+     * Checks if right is pressed.
+     * @return true if right pressed
+     */
     private boolean isRightPressed() {
         return pressedKeys.contains(KeyCode.RIGHT) || pressedKeys.contains(KeyCode.D);
     }
 
+    /**
+     * Checks if down is pressed.
+     * @return true if down pressed
+     */
     private boolean isDownPressed() {
         return pressedKeys.contains(KeyCode.DOWN) || pressedKeys.contains(KeyCode.S);
     }
 
+    /**
+     * Checks if a key is pressed.
+     * @param keyCode key code
+     * @return true if pressed
+     */
     public boolean isKeyPressed(KeyCode keyCode) {
         return pressedKeys.contains(keyCode);
     }

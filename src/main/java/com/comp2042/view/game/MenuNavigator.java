@@ -9,26 +9,32 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 /**
- * Handles navigation between scenes
+ * Handles navigation between game scenes.
  */
 public class MenuNavigator {
 
     private final SoundManager soundManager;
     private Runnable onReturnToMenuCleanup;
 
+    /**
+     * Creates a new menu navigator.
+     * @param soundManager sound manager
+     */
     public MenuNavigator(SoundManager soundManager) {
         this.soundManager = soundManager;
     }
 
     /**
-     * Set cleanup callback to be called before returning to menu
+     * Sets cleanup callback for returning to menu.
+     * @param callback cleanup callback
      */
     public void setOnReturnToMenuCleanup(Runnable callback) {
         this.onReturnToMenuCleanup = callback;
     }
 
     /**
-     * Return to main menu
+     * Returns to main menu.
+     * @param stage current stage
      */
     public void returnToMainMenu(Stage stage) {
         try {
@@ -44,19 +50,16 @@ public class MenuNavigator {
             );
             Parent root = loader.load();
 
-            // Create a properly constrained StackPane
             StackPane centeredRoot = new StackPane();
             centeredRoot.setAlignment(Pos.CENTER);
             centeredRoot.setStyle("-fx-background-color: #1a1b26;");
 
-            // Force the root to maintain its preferred size
             root.setStyle("-fx-pref-width: 540px; -fx-pref-height: 720px; -fx-max-width: 540px; -fx-max-height: 720px;");
 
             centeredRoot.getChildren().add(root);
 
             Scene currentScene = stage.getScene();
 
-            // Apply scaling
             currentScene.widthProperty().addListener((obs, oldVal, newVal) -> {
                 updateScaling(centeredRoot, currentScene);
             });
@@ -73,6 +76,11 @@ public class MenuNavigator {
         }
     }
 
+    /**
+     * Updates scaling for window resize.
+     * @param centeredRoot centered root pane
+     * @param scene scene
+     */
     private void updateScaling(StackPane centeredRoot, Scene scene) {
         double baseWidth = 540;
         double baseHeight = 720;
@@ -80,7 +88,6 @@ public class MenuNavigator {
         double scaleX = scene.getWidth() / baseWidth;
         double scaleY = scene.getHeight() / baseHeight;
 
-        // Use the smaller scale to maintain aspect ratio
         double scale = Math.min(scaleX, scaleY);
 
         centeredRoot.setScaleX(scale);

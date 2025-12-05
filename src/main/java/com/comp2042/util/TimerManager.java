@@ -7,7 +7,7 @@ import javafx.scene.control.Label;
 import javafx.util.Duration;
 
 /**
- * Manages all game timers including Blitz countdown and Zen elapsed time
+ * Manages game timers for Blitz countdown and Zen elapsed time.
  */
 public class TimerManager {
 
@@ -19,6 +19,11 @@ public class TimerManager {
     private Runnable onBlitzTimeUp;
     private boolean isCleanedUp = false;
 
+    /**
+     * Creates a new timer manager.
+     * @param gameMode game mode (ZEN or BLITZ)
+     * @param timerLabel label to display timer
+     */
     public TimerManager(GameMode gameMode, Label timerLabel) {
         this.gameMode = gameMode;
         this.timerLabel = timerLabel;
@@ -30,6 +35,9 @@ public class TimerManager {
         }
     }
 
+    /**
+     * Sets up timer for Zen mode (counts up).
+     */
     private void setupZenTimer() {
         zenTimer = new GameTimer();
         zenTimer.elapsedSecondsProperty().addListener((observable, oldValue, newValue) -> {
@@ -42,6 +50,9 @@ public class TimerManager {
         }
     }
 
+    /**
+     * Sets up timer for Blitz mode (counts down).
+     */
     private void setupBlitzTimer() {
         if (blitzTimeline != null) {
             blitzTimeline.stop();
@@ -80,6 +91,9 @@ public class TimerManager {
         blitzTimeline.setCycleCount(Timeline.INDEFINITE);
     }
 
+    /**
+     * Starts the timer.
+     */
     public void start() {
         if (isCleanedUp) {
             return;
@@ -92,6 +106,9 @@ public class TimerManager {
         }
     }
 
+    /**
+     * Stops the timer.
+     */
     public void stop() {
         if (gameMode == GameMode.ZEN && zenTimer != null) {
             zenTimer.stop();
@@ -100,6 +117,9 @@ public class TimerManager {
         }
     }
 
+    /**
+     * Pauses the timer.
+     */
     public void pause() {
         if (gameMode == GameMode.BLITZ && blitzTimeline != null) {
             blitzTimeline.pause();
@@ -107,10 +127,16 @@ public class TimerManager {
         stop();
     }
 
+    /**
+     * Resumes the timer.
+     */
     public void resume() {
         start();
     }
 
+    /**
+     * Resets the timer to initial state.
+     */
     public void reset() {
         if (gameMode == GameMode.ZEN && zenTimer != null) {
             zenTimer.reset();
@@ -126,6 +152,9 @@ public class TimerManager {
         }
     }
 
+    /**
+     * Cleans up timer resources.
+     */
     public void cleanup() {
         isCleanedUp = true;
 
@@ -137,16 +166,29 @@ public class TimerManager {
         }
     }
 
+    /**
+     * Sets callback for when Blitz time runs out.
+     * @param callback callback to run
+     */
     public void setOnBlitzTimeUp(Runnable callback) {
         this.onBlitzTimeUp = callback;
     }
 
+    /**
+     * Formats time in MM:SS format.
+     * @param totalSeconds total seconds
+     * @return formatted time string
+     */
     private String formatTime(int totalSeconds) {
         int minutes = totalSeconds / 60;
         int seconds = totalSeconds % 60;
         return String.format("%02d:%02d", minutes, seconds);
     }
 
+    /**
+     * Gets remaining time in Blitz mode.
+     * @return remaining seconds
+     */
     public int getBlitzTimeRemaining() {
         return blitzTimeRemaining;
     }

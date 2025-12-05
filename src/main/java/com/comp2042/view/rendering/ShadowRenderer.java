@@ -8,7 +8,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 /**
- * Handles rendering of the shadow (ghost piece) showing where the brick will land
+ * Handles rendering of the shadow (ghost piece) showing where brick will land.
+ * Displays semi-transparent preview at drop position.
  */
 public class ShadowRenderer {
 
@@ -16,6 +17,11 @@ public class ShadowRenderer {
     private final GridPane shadowPanel;
     private Rectangle[][] shadowRectangles;
 
+    /**
+     * Constructs shadow renderer.
+     *
+     * @param gamePanel main game panel
+     */
     public ShadowRenderer(GridPane gamePanel) {
         this.gamePanel = gamePanel;
         this.shadowPanel = new GridPane();
@@ -24,7 +30,9 @@ public class ShadowRenderer {
     }
 
     /**
-     * Initialize the shadow with the initial brick data
+     * Initializes shadow with initial brick data.
+     *
+     * @param brickData initial brick shape
      */
     public void initialize(int[][] brickData) {
         shadowRectangles = new Rectangle[brickData.length][brickData[0].length];
@@ -46,10 +54,13 @@ public class ShadowRenderer {
     }
 
     /**
-     * Update the shadow position based on current brick state
+     * Updates shadow position based on current brick state.
+     * Only shows shadow if different from actual brick position.
+     *
+     * @param viewData updated view data
      */
     public void update(ViewData viewData) {
-        // Clear existing shadow from game panel
+        // Clear existing shadow
         for (int i = 0; i < shadowRectangles.length; i++) {
             for (int j = 0; j < shadowRectangles[i].length; j++) {
                 shadowRectangles[i][j].setFill(Color.TRANSPARENT);
@@ -59,7 +70,7 @@ public class ShadowRenderer {
 
         int[][] brickData = viewData.getBrickData();
 
-        // Recreate shadow rectangles if brick size changed
+        // Recreate if size changed
         if (shadowRectangles.length != brickData.length ||
                 shadowRectangles[0].length != brickData[0].length) {
             shadowRectangles = new Rectangle[brickData.length][brickData[0].length];
@@ -76,7 +87,7 @@ public class ShadowRenderer {
             }
         }
 
-        // Only show shadow if it's different from actual brick position
+        // Show shadow only if different from brick position
         if (viewData.getShadowYPosition() != viewData.getyPosition()) {
             for (int i = 0; i < brickData.length; i++) {
                 for (int j = 0; j < brickData[i].length; j++) {
@@ -94,10 +105,20 @@ public class ShadowRenderer {
         }
     }
 
+    /**
+     * Gets the shadow panel.
+     *
+     * @return shadow GridPane
+     */
     public GridPane getShadowPanel() {
         return shadowPanel;
     }
 
+    /**
+     * Sets shadow visibility.
+     *
+     * @param visible true to show, false to hide
+     */
     public void setVisible(boolean visible) {
         if (shadowPanel != null) {
             shadowPanel.setVisible(visible);

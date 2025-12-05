@@ -4,7 +4,7 @@ import com.comp2042.logic.bricks.Brick;
 import java.awt.Point;
 
 /**
- * Manages the hold brick feature
+ * Manages the hold piece feature allowing players to swap current piece.
  */
 public class HoldBrickManager {
 
@@ -12,6 +12,9 @@ public class HoldBrickManager {
     private boolean canHold;
     private boolean hasHoldBrick;
 
+    /**
+     * Creates a new hold brick manager.
+     */
     public HoldBrickManager() {
         this.canHold = true;
         this.hasHoldBrick = false;
@@ -19,21 +22,24 @@ public class HoldBrickManager {
     }
 
     /**
-     * Check if player can currently hold
+     * Checks if player can currently use hold.
+     * @return true if hold is available
      */
     public boolean canHold() {
         return canHold;
     }
 
     /**
-     * Get the currently held brick
+     * Gets the currently held brick.
+     * @return held brick or null
      */
     public Brick getHoldBrick() {
         return holdBrick;
     }
 
     /**
-     * Get hold brick display data
+     * Gets the hold brick display data.
+     * @return hold brick matrix for rendering
      */
     public int[][] getHoldBrickData() {
         if (holdBrick != null) {
@@ -43,14 +49,16 @@ public class HoldBrickManager {
     }
 
     /**
-     * Check if there's a brick in hold
+     * Checks if there is a brick in hold.
+     * @return true if hold slot is occupied
      */
     public boolean hasHoldBrick() {
         return hasHoldBrick;
     }
 
     /**
-     * Set the hold brick (internal use)
+     * Sets the held brick.
+     * @param brick brick to hold
      */
     public void setHoldBrick(Brick brick) {
         this.holdBrick = brick;
@@ -58,21 +66,21 @@ public class HoldBrickManager {
     }
 
     /**
-     * Disable hold for this turn (called after using hold)
+     * Disables hold for current piece (called after using hold).
      */
     public void disableHold() {
         this.canHold = false;
     }
 
     /**
-     * Enable hold for new brick
+     * Enables hold for new piece.
      */
     public void enableHold() {
         this.canHold = true;
     }
 
     /**
-     * Reset hold system
+     * Resets hold system to initial state.
      */
     public void reset() {
         this.holdBrick = null;

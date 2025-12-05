@@ -21,6 +21,10 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.prefs.Preferences;
 
+/**
+ * Controller for the main menu screen.
+ * Handles game mode selection, high score display, and navigation to game.
+ */
 public class MainMenuController implements Initializable {
 
     @FXML
@@ -36,7 +40,6 @@ public class MainMenuController implements Initializable {
     private Label blitzHighScoreLabel;
 
     private Preferences prefs;
-
     private SoundManager soundManager;
 
     @Override
@@ -52,8 +55,10 @@ public class MainMenuController implements Initializable {
         setupClickHandlers();
     }
 
+    /**
+     * Sets initial border styles for mode selection panels.
+     */
     private void setInitialStyles() {
-        // Set zen mode initial border
         zenModePanel.setStyle(
                 "-fx-border-color: rgba(122, 162, 247, 0.3); " +
                         "-fx-border-width: 2px; " +
@@ -61,7 +66,6 @@ public class MainMenuController implements Initializable {
                         "-fx-background-radius: 12px;"
         );
 
-        // Set blitz mode initial border
         blitzModePanel.setStyle(
                 "-fx-border-color: rgba(247, 118, 142, 0.3); " +
                         "-fx-border-width: 2px; " +
@@ -70,6 +74,9 @@ public class MainMenuController implements Initializable {
         );
     }
 
+    /**
+     * Loads and displays high scores for both game modes.
+     */
     private void loadHighScores() {
         int zenHighScore = prefs.getInt("zen_high_score", 0);
         int blitzHighScore = prefs.getInt("blitz_high_score", 0);
@@ -78,6 +85,10 @@ public class MainMenuController implements Initializable {
         blitzHighScoreLabel.setText(String.format("Best: %d", blitzHighScore));
     }
 
+    /**
+     * Sets up hover effects for mode selection panels.
+     * Adds highlighting and scale animations on mouse enter/exit.
+     */
     private void setupHoverEffects() {
         zenModePanel.setOnMouseEntered(e -> {
             zenModePanel.setStyle(
@@ -92,7 +103,6 @@ public class MainMenuController implements Initializable {
         });
 
         zenModePanel.setOnMouseExited(e -> {
-            // Keep default border visible when not hovering
             zenModePanel.setStyle(
                     "-fx-border-color: rgba(122, 162, 247, 0.3); " +
                             "-fx-border-width: 2px; " +
@@ -115,7 +125,6 @@ public class MainMenuController implements Initializable {
         });
 
         blitzModePanel.setOnMouseExited(e -> {
-            // Keep default border visible when not hovering
             blitzModePanel.setStyle(
                     "-fx-border-color: rgba(247, 118, 142, 0.3); " +
                             "-fx-border-width: 2px; " +
@@ -126,6 +135,13 @@ public class MainMenuController implements Initializable {
         });
     }
 
+    /**
+     * Animates panel scale transition.
+     *
+     * @param panel panel to animate
+     * @param fromScale starting scale value
+     * @param toScale ending scale value
+     */
     private void animateScale(VBox panel, double fromScale, double toScale) {
         ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(200), panel);
         scaleTransition.setFromX(fromScale);
@@ -135,11 +151,20 @@ public class MainMenuController implements Initializable {
         scaleTransition.play();
     }
 
+    /**
+     * Sets up click handlers for mode selection panels.
+     */
     private void setupClickHandlers() {
         zenModePanel.setOnMouseClicked(e -> startGame(GameMode.ZEN));
         blitzModePanel.setOnMouseClicked(e -> startGame(GameMode.BLITZ));
     }
 
+    /**
+     * Starts game with selected mode.
+     * Loads game scene and initializes game controller.
+     *
+     * @param mode the selected GameMode (ZEN or BLITZ)
+     */
     private void startGame(GameMode mode) {
         try {
             soundManager.stopBackgroundMusic();
@@ -147,12 +172,10 @@ public class MainMenuController implements Initializable {
             Parent root = loader.load();
             GuiController guiController = loader.getController();
 
-            // Create a properly constrained StackPane
             StackPane centeredRoot = new StackPane();
             centeredRoot.setAlignment(javafx.geometry.Pos.CENTER);
             centeredRoot.setStyle("-fx-background-color: #1a1b26;");
 
-            // Force the root to maintain its preferred size
             root.setStyle("-fx-pref-width: 540px; -fx-pref-height: 720px; -fx-max-width: 540px; -fx-max-height: 720px;");
 
             centeredRoot.getChildren().add(root);
@@ -160,7 +183,6 @@ public class MainMenuController implements Initializable {
             Stage stage = (Stage) zenModePanel.getScene().getWindow();
             Scene currentScene = stage.getScene();
 
-            // Apply scaling
             currentScene.widthProperty().addListener((obs, oldVal, newVal) -> {
                 updateScaling(centeredRoot, currentScene);
             });
@@ -179,6 +201,12 @@ public class MainMenuController implements Initializable {
         }
     }
 
+    /**
+     * Updates scene scaling to maintain aspect ratio.
+     *
+     * @param centeredRoot root pane to scale
+     * @param scene current scene
+     */
     private void updateScaling(StackPane centeredRoot, Scene scene) {
         double baseWidth = 540;
         double baseHeight = 720;
