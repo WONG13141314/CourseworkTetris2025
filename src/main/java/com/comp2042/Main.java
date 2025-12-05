@@ -11,8 +11,21 @@ import javafx.stage.Stage;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * Main application entry point for TetrisJFX.
+ * Initializes the JavaFX application and loads the main menu screen.
+ * Handles window setup, scaling, and responsive layout management.
+ */
 public class Main extends Application {
 
+    /**
+     * Starts the JavaFX application.
+     * Loads the main menu FXML, sets up the scene with proper scaling,
+     * and configures the primary stage with resizable window support.
+     *
+     * @param primaryStage the primary stage for this application
+     * @throws Exception if FXML loading or scene creation fails
+     */
     @Override
     public void start(Stage primaryStage) throws Exception {
         URL location = getClass().getClassLoader().getResource("mainMenu.fxml");
@@ -58,6 +71,14 @@ public class Main extends Application {
         updateScaling(centeredRoot, scene);
     }
 
+    /**
+     * Updates the scaling of the centered content to maintain aspect ratio.
+     * Calculates appropriate scale factors based on scene dimensions and
+     * applies uniform scaling to preserve the original layout proportions.
+     *
+     * @param centeredRoot the root pane containing the game content
+     * @param scene the current scene
+     */
     private void updateScaling(StackPane centeredRoot, Scene scene) {
         double baseWidth = 540;
         double baseHeight = 720;
@@ -73,6 +94,12 @@ public class Main extends Application {
         centeredRoot.setScaleY(scale);
     }
 
+    /**
+     * Application entry point.
+     * Launches the JavaFX application.
+     *
+     * @param args command line arguments (not used)
+     */
     public static void main(String[] args) {
         launch(args);
     }
