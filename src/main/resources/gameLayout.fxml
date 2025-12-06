@@ -129,7 +129,7 @@
     </Group>
 
     <!-- Pause Panel -->
-    <Group fx:id="pauseGroup" layoutX="135" layoutY="280" visible="false">
+    <Group fx:id="pauseGroup" layoutX="125" layoutY="280" visible="false">
         <VBox alignment="CENTER">
             <VBox styleClass="game-over-container" alignment="CENTER" spacing="15">
                 <Label text="GAME PAUSED" styleClass="gameOverStyle"/>
