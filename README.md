@@ -13,8 +13,8 @@
 
 ### Prerequisites
 
-- **Java Development Kit (JDK):** Version 11 or higher
-- **JavaFX SDK:** Version 11 or higher
+- **Java Development Kit (JDK):** Version 23
+- **JavaFX SDK:** Version 23
 - **Maven:** Version 3.6 or higher (for dependency management)
 
 ### Steps to Compile and Run
